@@ -66,6 +66,7 @@ public class DurakGame {
 
     public void start() {
         orderPlayersByTrumpSuit();
+        changePlayersListener();
 
         while (players.size() >= 2) {
             Player player = getPlayer();
@@ -75,6 +76,15 @@ public class DurakGame {
             // int message = Integer.parseInt(player.read());
             timer.cancel();
             timer.purge();
+        }
+    }
+
+    private void changePlayersListener() {
+        for (Player player : players) {
+            Connection playerConnection = player.getConnection();
+            playerConnection.setListener(new GameListener(
+                    playerConnection, this
+            ));
         }
     }
 

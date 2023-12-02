@@ -1,10 +1,16 @@
 package com.example.cardgame;
 
+import com.example.cardgame.server.Room;
 import com.example.cardgame.server.Server;
+import com.example.cardgame.server.ServerSingleton;
 
 public class Main {
     public static void main(String[] args) {
-        Server server = new Server();
+        Server server = ServerSingleton.getServer();
+        server.rooms.add(new Room());
+        server.rooms.add(new Room());
+        server.rooms.add(new Room());
+        server.rooms.add(new Room());
         server.start();
     }
 }

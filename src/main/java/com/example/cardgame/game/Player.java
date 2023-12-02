@@ -46,4 +46,8 @@ public class Player {
     public void write(String text) {
         connection.write(text);
     }
+
+    public Connection getConnection() {
+        return connection;
+    }
 }

@@ -5,12 +5,15 @@ import com.example.cardgame.server.listener.RoomListener;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class Room {
     private final List<Connection> players = new ArrayList<>();
 
+    private final UUID uuid = UUID.randomUUID();
     private int customMaxPlayersSize = DurakGame.maxPlayersSize;
     private int customMinPlayersSize = DurakGame.minPlayersSize;
+    private String roomName = String.valueOf(uuid);
 
     private DurakGame durakGame;
 
@@ -21,6 +24,10 @@ public class Room {
         }
         return false;
     }
+
+//    public void setRoomName(String name) {
+//        roomName = name;
+//    }
 
     public boolean setCustomMinConnectionsSize(int min) {
         if (min >= DurakGame.minPlayersSize) {
@@ -59,5 +66,34 @@ public class Room {
         } else {
             sendMessageToAll("");   // write error message
         }
+    }
+
+    public String getRoomName() {
+        return roomName;
+    }
+
+    public UUID getUuid() {
+        return uuid;
+    }
+
+    public boolean contains(Connection connection) {
+        for (Connection pConnection : players) {
+            if (pConnection.equals(connection)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void removeConnection(Connection connection) {
+        players.remove(connection);
+    }
+
+    public int getPlayersCount() {
+        return players.size();
+    }
+
+    public int getCustomMaxPlayersSize() {
+        return customMaxPlayersSize;
     }
 }

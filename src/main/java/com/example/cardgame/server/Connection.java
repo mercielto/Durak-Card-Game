@@ -14,8 +14,6 @@ public class Connection {
 
     private Thread inputListener;
 
-
-
     public Connection(Socket socket1) {
         socket = socket1;
         account = null;     ////
@@ -40,5 +38,15 @@ public class Connection {
 
     public BufferedReader getReader() {
         return reader;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof Connection) {
+            if (socket.equals(((Connection) obj).socket)) {
+                return true;
+            }
+        }
+        return false;
     }
 }
