@@ -4,18 +4,16 @@ import com.example.cardgame.properties.ServerProperties;
 
 import java.io.*;
 import java.net.Socket;
+import java.util.UUID;
 
 public class Client {
     private Socket clientSocket;
     private BufferedReader reader;
     private PrintWriter out;
     private Thread inputListener;
+    private String name = UUID.randomUUID().toString().substring(1, 5);     ///////////
 
     public Client() {
-        connect();
-    }
-
-    public void connect() {
         try {
             clientSocket = new Socket(ServerProperties.getHost(), ServerProperties.getPort());
 
@@ -64,5 +62,13 @@ public class Client {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }

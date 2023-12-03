@@ -1,6 +1,7 @@
-package com.example.cardgame;
+package com.example.cardgame.client.application;
 
 import com.example.cardgame.client.ClientSingleton;
+import com.example.cardgame.client.StageSingleton;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -16,9 +17,9 @@ public class MainApplication extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
+        StageSingleton.setStage(stage);
         FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("main.fxml"));
         Scene scene = new Scene(fxmlLoader.load());
-        stage.setTitle("Hello!");
         stage.setScene(scene);
         stage.show();
     }

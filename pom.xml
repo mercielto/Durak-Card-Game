@@ -65,7 +65,7 @@
             <!-- Default configuration for running with: mvn clean javafx:run -->
             <id>default-cli</id>
             <configuration>
-              <mainClass>com.example.cardgame/com.example.cardgame.MainApplication</mainClass>
+              <mainClass>com.example.cardgame/com.example.cardgame.client.application.MainApplication</mainClass>
               <launcher>app</launcher>
               <jlinkZipName>app</jlinkZipName>
               <jlinkImageName>app</jlinkImageName>

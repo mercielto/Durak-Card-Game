@@ -1,5 +1,6 @@
 package com.example.cardgame.server.listener;
 
+import com.example.cardgame.client.response.model.RoomResponse;
 import com.example.cardgame.properties.SearchTypeProperty;
 import com.example.cardgame.server.exception.NoRoomFoundException;
 import com.example.cardgame.properties.ServerProperties;
@@ -8,6 +9,7 @@ import com.example.cardgame.server.Connection;
 import com.example.cardgame.server.Room;
 import com.example.cardgame.server.Server;
 import com.example.cardgame.server.handler.MainListenerHandler;
+import com.example.cardgame.server.model.request.RoomRequest;
 import com.example.cardgame.server.responseGenerator.MainListenerResponseGenerator;
 
 import java.io.BufferedReader;
@@ -33,7 +35,7 @@ public class MainListener extends Thread {
                 String message = reader.readLine();
                 if (message != null) {
                     String[] splitMessage = message.split(ServerProperties.getMainDelimiter());
-                    MenuCommands command = MenuCommands.defineCommand(Integer.parseInt(splitMessage[0]));
+                    MenuCommands command = MenuCommands.defineCommand(splitMessage[0]);
 
                     switch (command) {
                         case JOIN_ROOM -> {
@@ -41,7 +43,14 @@ public class MainListener extends Thread {
                             server.addConnectionToRoom(connection, uuid);
                         }
                         case LEAVE_ROOM -> server.leaveRoom(connection);
-                        case CREATE_ROOM -> server.createRoom(connection);
+                        case CREATE_ROOM -> {
+                            RoomRequest request = RoomRequest.builder()
+                                    .maxPlayersCount(Integer.parseInt(splitMessage[1]))
+                                    .name(splitMessage[2])
+                                    .build();
+                            String uuid = server.createRoom(connection, request);
+                            connection.write(uuid);
+                        }
                         case START_GAME -> handleMessages = false;
                         case GET_AVAILABLE_ROOMS -> {
                             List<Room> rooms = MainListenerHandler.getAvailableRooms(splitMessage);

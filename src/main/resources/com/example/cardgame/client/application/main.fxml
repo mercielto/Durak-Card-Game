@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.collections.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox alignment="CENTER" style="-fx-background-color: #025026;" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.cardgame.client.controller.MainController">
+   <children>
+      <FlowPane alignment="CENTER" style="-fx-control-inner-background: #025026;">
+         <children>
+            <AnchorPane style="-fx-border-color: black;">
+               <children>
+                  <BorderPane prefHeight="400.0" prefWidth="699.0">
+                     <top>
+                        <GridPane alignment="CENTER" cache="true" hgap="10.0" prefHeight="34.0" prefWidth="699.0" vgap="10.0" BorderPane.alignment="CENTER">
+                          <columnConstraints>
+                              <ColumnConstraints hgrow="SOMETIMES" maxWidth="228.0" minWidth="10.0" prefWidth="76.0" />
+                              <ColumnConstraints hgrow="SOMETIMES" maxWidth="228.0" minWidth="10.0" prefWidth="110.0" />
+                            <ColumnConstraints hgrow="SOMETIMES" maxWidth="342.0" minWidth="10.0" prefWidth="297.0" />
+                            <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                              <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                          </columnConstraints>
+                          <rowConstraints>
+                            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                          </rowConstraints>
+                           <children>
+                              <Button contentDisplay="TOP" mnemonicParsing="false" onAction="#handleSearch" text="SEARCH" GridPane.columnIndex="3" />
+                               <ChoiceBox fx:id="searchType" prefHeight="25.0" prefWidth="106.0" style="-fx-control-inner-background: white;" value="By room name" GridPane.columnIndex="1">
+                                   <items>
+                                       <FXCollections fx:factory="observableArrayList">
+                                           <String fx:value="By room name" />
+                                           <String fx:value="By room id" />
+                                       </FXCollections>
+                                   </items>
+                               </ChoiceBox>
+                              <TextField fx:id="searchTextField" style="-fx-control-inner-background: white;" GridPane.columnIndex="2" />
+                              <Button mnemonicParsing="false" onAction="#createRoom" text="CREATE" GridPane.columnIndex="4" />
+                           </children>
+                           <padding>
+                              <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                           </padding>
+                           <BorderPane.margin>
+                              <Insets />
+                           </BorderPane.margin>
+                        </GridPane>
+                     </top>
+                     <center>
+                        <ListView fx:id="listView" onMouseClicked="#handleMouseClickListView" prefHeight="200.0" prefWidth="200.0" style="-fx-border-color: black;" BorderPane.alignment="CENTER" />
+                     </center>
+                  </BorderPane>
+               </children>
+            </AnchorPane>
+         </children>
+      </FlowPane>
+   </children>
+</VBox>

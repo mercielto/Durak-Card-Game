@@ -5,6 +5,7 @@ import com.example.cardgame.properties.ServerProperties;
 import com.example.cardgame.properties.commands.MenuCommands;
 
 import java.util.StringJoiner;
+import java.util.UUID;
 
 
 public class MenuListenerRequestGenerator {
@@ -17,6 +18,23 @@ public class MenuListenerRequestGenerator {
             joiner.add(searchParameter);
         }
 
+        return joiner.toString();
+    }
+
+    public static String createRoom(String roomName, Integer maxPlayerCount) {
+        StringJoiner joiner = new StringJoiner(ServerProperties.getMainDelimiter());
+        joiner.add(String.valueOf(MenuCommands.CREATE_ROOM.getValue()));
+        joiner.add(String.valueOf(maxPlayerCount));
+        if (roomName.length() != 0) {
+            joiner.add(roomName);
+        }
+        return joiner.toString();
+    }
+
+    public static String joinRoom(String id) {
+        StringJoiner joiner = new StringJoiner(ServerProperties.getMainDelimiter());
+        joiner.add(MenuCommands.JOIN_ROOM.getValue());
+        joiner.add(id);
         return joiner.toString();
     }
 }

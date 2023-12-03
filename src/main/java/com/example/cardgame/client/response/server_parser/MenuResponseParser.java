@@ -1,4 +1,4 @@
-package com.example.cardgame.client.response.parser;
+package com.example.cardgame.client.response.server_parser;
 
 import com.example.cardgame.client.response.model.RoomResponse;
 import com.example.cardgame.properties.ServerProperties;

@@ -1,6 +1,8 @@
 package com.example.cardgame.client.listener;
 
 import com.example.cardgame.client.Client;
+import com.example.cardgame.client.service.MenuHandlerService;
+import com.example.cardgame.properties.ServerProperties;
 import com.example.cardgame.properties.commands.MenuCommands;
 
 import java.io.BufferedReader;
@@ -12,6 +14,21 @@ public class MenuListener extends Thread {
 
     @Override
     public void run() {
-        super.run();
+        BufferedReader reader = client.getReader();
+        while (true) {
+            try {
+                String message = reader.readLine();
+                String[] splitted = message.split(ServerProperties.getMainDelimiter());
+                MenuCommands command = MenuCommands.defineCommand(splitted[0]);
+
+                switch (command) {
+                    case SOMEONE_JOINED_ROOM -> {
+                        MenuHandlerService.updateListView(splitted[1]);
+                    }
+                }
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 }

@@ -1,9 +1,11 @@
 package com.example.cardgame.server;
 
 import com.example.cardgame.properties.SearchTypeProperty;
+import com.example.cardgame.properties.commands.MenuCommands;
 import com.example.cardgame.server.exception.NoRoomFoundException;
 import com.example.cardgame.properties.ServerProperties;
 import com.example.cardgame.server.listener.MainListener;
+import com.example.cardgame.server.model.request.RoomRequest;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -84,9 +86,24 @@ public class Server {
         return availableRooms;
     }
 
-    public void createRoom(Connection connection) {
+    public boolean isConnectionHasRoom(Connection connection) {
+        for (Room room : rooms) {
+            if (room.contains(connection)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public String createRoom(Connection connection, RoomRequest request) {
+        if (isConnectionHasRoom(connection)) {
+            return String.valueOf(MenuCommands.ERROR.getValue());
+        }
         Room room = new Room();
+        room.setRoomName(request.getName());
+        room.setCustomMaxConnectionsSize(request.getMaxPlayersCount());
         room.addConnection(connection);
         rooms.add(room);
+        return room.getUuid().toString();
     }
 }

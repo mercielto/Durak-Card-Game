@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.collections.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox alignment="CENTER" style="-fx-background-color: #025026;" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.cardgame.client.controller.CreateRoomController">
+    <children>
+        <FlowPane alignment="CENTER" style="-fx-control-inner-background: #025026;">
+            <children>
+                <AnchorPane prefHeight="400.0" prefWidth="699.0" style="-fx-border-color: black;">
+               <children>
+                  <TextField fx:id="roomName" layoutX="486.0" layoutY="119.0" prefHeight="25.0" prefWidth="172.0" />
+                   <ChoiceBox fx:id="maxPlayersCount" layoutX="486.0" layoutY="169.0" prefHeight="25.0" prefWidth="75.0" style="-fx-control-inner-background: white;" value="6">
+                       <items>
+                           <FXCollections fx:factory="observableArrayList">
+                               <String fx:value="6" />
+                               <String fx:value="5" />
+                               <String fx:value="4" />
+                               <String fx:value="3" />
+                               <String fx:value="2" />
+                           </FXCollections>
+                       </items>
+                   </ChoiceBox>
+                  <Label layoutX="337.0" layoutY="119.0" prefHeight="25.0" prefWidth="141.0" text="Room name" textFill="WHITE" />
+                  <Label layoutX="337.0" layoutY="169.0" prefHeight="25.0" prefWidth="141.0" text="Max players count" textFill="WHITE" />
+                  <Button disable="true" layoutX="486.0" layoutY="333.0" mnemonicParsing="false" onAction="#startGame" opacity="0.0" prefHeight="32.0" prefWidth="116.0" text="Start" />
+                  <ImageView fitHeight="37.0" fitWidth="37.0" layoutX="23.0" layoutY="14.0" onMouseClicked="#backToSearch" opacity="0.47" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@images/back.png.png" />
+                     </image>
+                  </ImageView>
+                  <ListView fx:id="listView" layoutX="23.0" layoutY="73.0" prefHeight="238.0" prefWidth="266.0" />
+                  <Button fx:id="createBtn" layoutX="486.0" layoutY="254.0" mnemonicParsing="false" onAction="#createRoom" prefHeight="25.0" prefWidth="90.0" text="Create" />
+                  <Label layoutX="337.0" layoutY="84.0" prefHeight="25.0" prefWidth="141.0" text="Room id" textFill="WHITE" />
+                  <TextField fx:id="roomId" editable="false" layoutX="486.0" layoutY="84.0" prefHeight="25.0" prefWidth="172.0" text="will be generated" />
+               </children>
+                </AnchorPane>
+            </children>
+        </FlowPane>
+    </children>
+</VBox>

@@ -25,9 +25,9 @@ public class Room {
         return false;
     }
 
-//    public void setRoomName(String name) {
-//        roomName = name;
-//    }
+    public void setRoomName(String name) {
+        roomName = name;
+    }
 
     public boolean setCustomMinConnectionsSize(int min) {
         if (min >= DurakGame.minPlayersSize) {
