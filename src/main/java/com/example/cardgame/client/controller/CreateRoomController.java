@@ -1,15 +1,21 @@
 package com.example.cardgame.client.controller;
 
+import com.example.cardgame.client.Client;
+import com.example.cardgame.client.ClientSingleton;
 import com.example.cardgame.client.StageSingleton;
-import com.example.cardgame.client.service.MenuHandlerService;
-import com.example.cardgame.properties.commands.MenuCommands;
+import com.example.cardgame.client.application.MainApplication;
+import com.example.cardgame.client.request.generator.ClientMenuListenerRequestGenerator;
+import com.example.cardgame.client.service.FxmlObjectsGetter;
+import com.example.cardgame.properties.FxmlObjectProperties;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
+
+import java.io.IOException;
+import java.util.List;
 
 
 public class CreateRoomController {
@@ -22,37 +28,35 @@ public class CreateRoomController {
     @FXML
     private ChoiceBox<String> maxPlayersCount;
     @FXML
+    private Button readyBtn;
+    @FXML
     private Button createBtn;
 
-    @FXML
-    private void backToSearch() {
 
+    @FXML
+    private void backToSearch() throws IOException {
+        Client client = ClientSingleton.getClient();
+        if (createBtn.isDisable()) {
+            client.write(ClientMenuListenerRequestGenerator.leaveRoom());
+        }
+        (new MainApplication()).start(StageSingleton.getStage());
     }
 
     @FXML
     private void createRoom() {
-        String id = MenuHandlerService.createRoom(roomName.getText(), Integer.valueOf(maxPlayersCount.getValue()));
-
-        if (id.equals(MenuCommands.ERROR.getValue())) {
-            return;
-        }
-
-        String player = MenuHandlerService.getPlayerInfo();
-        ObservableList<String> roomsObservableList = FXCollections.observableArrayList(player);
-        listView.setItems(roomsObservableList);
-
-        if (roomName.getText().length() == 0) {
-            roomName.setText(id);
-        }
-        roomId.setText(id);
-        roomId.setEditable(false);
-        maxPlayersCount.setDisable(true);
-        createBtn.setDisable(true);
-        roomName.setDisable(true);
+        Client client = ClientSingleton.getClient();
+        client.write(ClientMenuListenerRequestGenerator
+                .createRoom(
+                        roomName.getText(),
+                        Integer.valueOf(maxPlayersCount.getValue()))
+        );
     }
 
     @FXML
-    private void startGame() {
-
+    private void handleReadyButtonAction() {
+        Client client = ClientSingleton.getClient();
+        client.write(
+                ClientMenuListenerRequestGenerator.ready()
+        );
     }
 }

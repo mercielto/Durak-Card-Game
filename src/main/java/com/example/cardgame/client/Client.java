@@ -11,9 +11,10 @@ public class Client {
     private BufferedReader reader;
     private PrintWriter out;
     private Thread inputListener;
-    private String name = UUID.randomUUID().toString().substring(1, 5);     ///////////
+    private String name;
 
-    public Client() {
+    public Client(String name1) {
+        name = name1;
         try {
             clientSocket = new Socket(ServerProperties.getHost(), ServerProperties.getPort());
 

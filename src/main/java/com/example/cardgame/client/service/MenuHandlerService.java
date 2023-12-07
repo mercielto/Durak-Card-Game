@@ -3,36 +3,56 @@ package com.example.cardgame.client.service;
 import com.example.cardgame.client.Client;
 import com.example.cardgame.client.ClientSingleton;
 import com.example.cardgame.client.StageSingleton;
-import com.example.cardgame.properties.SearchTypeProperty;
-import com.example.cardgame.client.request.MenuListenerRequestGenerator;
+import com.example.cardgame.client.application.MainApplication;
+import com.example.cardgame.properties.FxmlObjectProperties;
+import com.example.cardgame.client.request.generator.ClientMenuListenerRequestGenerator;
 import com.example.cardgame.client.response.model.RoomResponse;
 import com.example.cardgame.client.response.server_parser.MenuResponseParser;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ListView;
-import javafx.stage.Stage;
+import javafx.scene.control.TextField;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class MenuHandlerService {
-    public static List<String> getAvailableRooms(SearchTypeProperty property, String searchProperty) {
-        Client client = ClientSingleton.getClient();
-        client.write(MenuListenerRequestGenerator.getAvailableGames(property, searchProperty));
-        String message = client.read();
+    public static void getAvailableRooms(String message) {
         List<RoomResponse> roomResponses = MenuResponseParser.parseGetAvailableRooms(message);
 
-        List<String> ans = new ArrayList<>();
+        List<String> rooms = new ArrayList<>();
         for (RoomResponse response : roomResponses) {
-            ans.add(response.toString());
+            rooms.add(response.toString());
         }
-        return ans;
+
+        ObservableList<String> roomsObservableList = FXCollections.observableArrayList(rooms);
+        FxmlObjectsGetter.getListViewById(FxmlObjectProperties.menuListViewId)
+                .setItems(roomsObservableList);
     }
 
-    public static String createRoom(String roomName, Integer maxPlayerCount) {
-        Client client = ClientSingleton.getClient();
-        client.write(MenuListenerRequestGenerator.createRoom(roomName, maxPlayerCount));
-        return client.read();
+    public static void createRoom(String id) {
+        ListView<String> listView = FxmlObjectsGetter.getListViewById(FxmlObjectProperties.roomListViewId);
+        TextField roomName = FxmlObjectsGetter.getTextFieldById(FxmlObjectProperties.roomNameId);
+        TextField roomId = FxmlObjectsGetter.getTextFieldById(FxmlObjectProperties.roomIdId);
+        ChoiceBox<String> maxPlayersCount = FxmlObjectsGetter.getChoiceBoxById(FxmlObjectProperties.roomChoiceBoxId);
+        Button createBtn = FxmlObjectsGetter.getButtonById(FxmlObjectProperties.roomCreateBtnId);
+
+        String player = MenuHandlerService.getPlayerInfo();
+        ObservableList<String> roomsObservableList = FXCollections.observableArrayList(player);
+        listView.setItems(roomsObservableList);
+
+        if (roomName.getText().length() == 0) {
+            roomName.setText(id);
+        }
+        roomId.setText(id);
+        roomId.setEditable(false);
+        maxPlayersCount.setDisable(true);
+        createBtn.setDisable(true);
+        roomName.setDisable(true);
     }
 
     public static String getPlayerInfo() {
@@ -42,17 +62,42 @@ public class MenuHandlerService {
 
     public static void joinRoom(RoomResponse response) {
         Client client = ClientSingleton.getClient();
-        client.write(MenuListenerRequestGenerator.joinRoom(response.getUuid().toString()));
+        client.write(ClientMenuListenerRequestGenerator.joinRoom(response.getUuid().toString()));
     }
 
-    // CHECK FIRSTLY
     public static void updateListView(String name) {
-        Stage stage = StageSingleton.getStage();
-        Scene scene = stage.getScene();
-        ListView<String> listView = (ListView<String>) scene.lookup("#listView");
-        List<String> lv = listView.getItems();
-        lv.add(name);
-        listView.setItems((ObservableList<String>) lv);
-        stage.show();
+        ListView<String> listView = FxmlObjectsGetter.getListViewById(FxmlObjectProperties.roomListViewId);
+        List<String> list = listView.getItems();
+
+        list.add(name);
+        listView.setItems(FXCollections.observableList(list));
+    }
+
+    public static void sendRequestForListView(UUID uuid) {
+         Client client = ClientSingleton.getClient();
+         client.write(ClientMenuListenerRequestGenerator.getPlayersListView(uuid.toString()));
+    }
+
+    public static void getPlayersListView(String[] names) {
+        List<String> namesList = List.of(names);
+        namesList = namesList.subList(1, namesList.size());
+        ObservableList<String> roomsObservableList = FXCollections.observableArrayList(namesList);
+
+        ListView<String> listView = FxmlObjectsGetter.getListViewById(FxmlObjectProperties.roomListViewId);
+        listView.setItems(roomsObservableList);
+    }
+
+    public static void waitingForConfirmation() {
+        Button button = FxmlObjectsGetter.getButtonById(FxmlObjectProperties.readyBtnId);
+        button.opacityProperty().setValue(1);
+        button.setDisable(false);
+    }
+
+    public static void leaveRoom() {
+        try {
+            (new MainApplication()).start(StageSingleton.getStage());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

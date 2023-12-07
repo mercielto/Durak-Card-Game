@@ -47,7 +47,7 @@
                         </GridPane>
                      </top>
                      <center>
-                        <ListView fx:id="listView" onMouseClicked="#handleMouseClickListView" prefHeight="200.0" prefWidth="200.0" style="-fx-border-color: black;" BorderPane.alignment="CENTER" />
+                        <ListView fx:id="listViewRooms" onMouseClicked="#handleMouseClickListView" prefHeight="200.0" prefWidth="200.0" style="-fx-border-color: black;" BorderPane.alignment="CENTER" />
                      </center>
                   </BorderPane>
                </children>

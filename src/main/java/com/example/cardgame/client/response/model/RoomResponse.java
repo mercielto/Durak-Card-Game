@@ -15,6 +15,7 @@ public class RoomResponse {
     private UUID uuid;
     private int playersCount;
     private int maxPlayersCount;
+//    private List<String> players;
 
     @Override
     public String toString() {

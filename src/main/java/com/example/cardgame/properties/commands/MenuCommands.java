@@ -5,8 +5,16 @@ import com.example.cardgame.server.exception.CommandNotDefinedException;
 import java.util.Objects;
 
 public enum MenuCommands {
-    JOIN_ROOM("1"), LEAVE_ROOM("2"), CREATE_ROOM("3"), START_GAME("4"),
-    GET_AVAILABLE_ROOMS("5"), ERROR("0"), SOMEONE_JOINED_ROOM("6");
+    JOIN_ROOM("1"),
+    LEAVE_ROOM("2"),
+    CREATE_ROOM("3"),
+    START_GAME("4"),
+    GET_AVAILABLE_ROOMS("5"),
+    ERROR("0"),
+    SOMEONE_JOINED_ROOM("6"),
+    GET_PLAYERS_LIST_VIEW("7"),
+    WAITING_FOR_CONFIRMATION("8"),
+    READY("9");
 
     private String value;
     MenuCommands(String v) {

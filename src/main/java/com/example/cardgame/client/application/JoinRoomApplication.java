@@ -1,6 +1,7 @@
 package com.example.cardgame.client.application;
 
 import com.example.cardgame.client.response.model.RoomResponse;
+import com.example.cardgame.client.service.MenuHandlerService;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -21,9 +22,12 @@ public class JoinRoomApplication extends Application {
         FXMLLoader fxmlLoader = new FXMLLoader(JoinRoomApplication.class.getResource("createRoom.fxml"));
         Scene scene = new Scene(fxmlLoader.load());
 
+        MenuHandlerService.joinRoom(room);
+        MenuHandlerService.sendRequestForListView(room.getUuid());
+
         ChoiceBox<String> checkBox = (ChoiceBox<String>) scene.lookup("#maxPlayersCount");
         checkBox.setDisable(true);
-        checkBox.setValue(String.valueOf(room.getPlayersCount()));
+        checkBox.setValue(String.valueOf(room.getMaxPlayersCount()));
         
         Button btn = (Button) scene.lookup("#createBtn");
         btn.setDisable(true);
@@ -35,6 +39,10 @@ public class JoinRoomApplication extends Application {
         
         TextField idField = (TextField) scene.lookup("#roomId");
         idField.setText(room.getUuid().toString());
+
+//        ListView<String> listView = (ListView<String>) scene.lookup("#listView");
+//        ObservableList<String> observableList = FXCollections.observableArrayList(room.getPlayers());
+//        listView.setItems(observableList);
 
         stage.setTitle("Join room");
         stage.setScene(scene);

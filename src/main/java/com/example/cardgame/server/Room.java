@@ -9,6 +9,7 @@ import java.util.UUID;
 
 public class Room {
     private final List<Connection> players = new ArrayList<>();
+    private List<Connection> readyPlayers = new ArrayList<>();
 
     private final UUID uuid = UUID.randomUUID();
     private int customMaxPlayersSize = DurakGame.maxPlayersSize;
@@ -50,17 +51,13 @@ public class Room {
         return players.size() < customMaxPlayersSize;
     }
 
-    public boolean canStart() {
-        return players.size() >= customMinPlayersSize;
-    }
-
     public void sendMessageToAll(String text) {
         for (Connection connection : players) {
             connection.write(text);
         }
     }
 
-    public void start() {
+    public void startGame() {
         if (durakGame == null) {
             durakGame = new DurakGame(players);
         } else {
@@ -95,5 +92,35 @@ public class Room {
 
     public int getCustomMaxPlayersSize() {
         return customMaxPlayersSize;
+    }
+
+    public List<Connection> getPlayers() {
+        return players;
+    }
+
+    public boolean isFull() {
+        return players.size() == customMaxPlayersSize;
+    }
+
+    public void setReadyPlayer(Connection connection) {
+        if (players.contains(connection)) {
+            readyPlayers.add(connection);
+        }
+    }
+
+    public List<Connection> getReadyPlayers() {
+        return readyPlayers;
+    }
+
+    public void clearReadyPlayers() {
+        readyPlayers.clear();
+    }
+
+    public boolean isGameIsOn() {
+        return durakGame != null;
+    }
+
+    public boolean isEveryoneReady() {
+        return readyPlayers.size() == players.size();
     }
 }

@@ -2,6 +2,7 @@ package com.example.cardgame.client.application;
 
 import com.example.cardgame.client.ClientSingleton;
 import com.example.cardgame.client.StageSingleton;
+import com.example.cardgame.client.service.FxmlObjectsGetter;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;

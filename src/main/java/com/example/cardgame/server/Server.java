@@ -4,7 +4,7 @@ import com.example.cardgame.properties.SearchTypeProperty;
 import com.example.cardgame.properties.commands.MenuCommands;
 import com.example.cardgame.server.exception.NoRoomFoundException;
 import com.example.cardgame.properties.ServerProperties;
-import com.example.cardgame.server.listener.MainListener;
+import com.example.cardgame.server.listener.ServerMainListener;
 import com.example.cardgame.server.model.request.RoomRequest;
 
 import java.io.IOException;
@@ -27,8 +27,8 @@ public class Server {
                 Connection connection = new Connection(socket);
                 connections.add(connection);
 
-                MainListener mainListener = new MainListener(connection, this);
-                connection.setListener(mainListener);
+                ServerMainListener serverMainListener = new ServerMainListener(connection, this);
+                connection.setListener(serverMainListener);
             }
 
         } catch (IOException e) {
@@ -46,16 +46,16 @@ public class Server {
                 return room;
             }
         }
-        throw new NoRoomFoundException(uuid);
+        throw new NoRoomFoundException(uuid.toString());
     }
 
     public void addConnectionToRoom(Connection connection, UUID uuid) throws NoRoomFoundException {
         getRoomByUuid(uuid).addConnection(connection);
     }
 
-    public void leaveRoom(Connection connection) {
+    public void leaveRoom(Connection connection, UUID uuid) {
         for (Room room : rooms) {
-            if (room.contains(connection)) {
+            if (room.getUuid().equals(uuid)) {
                 room.removeConnection(connection);
                 return;
             }
@@ -100,10 +100,23 @@ public class Server {
             return String.valueOf(MenuCommands.ERROR.getValue());
         }
         Room room = new Room();
-        room.setRoomName(request.getName());
+        if (request.getName() == null) {
+            room.setRoomName(room.getUuid().toString());
+        } else {
+            room.setRoomName(request.getName());
+        }
         room.setCustomMaxConnectionsSize(request.getMaxPlayersCount());
         room.addConnection(connection);
         rooms.add(room);
         return room.getUuid().toString();
+    }
+
+    public Room getRoomByConnection(Connection connection) throws NoRoomFoundException {
+        for (Room room : rooms) {
+            if (room.contains(connection)) {
+                return room;
+            }
+        }
+        throw new NoRoomFoundException(connection.getName());
     }
 }

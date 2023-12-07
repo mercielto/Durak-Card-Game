@@ -4,19 +4,22 @@ import com.example.cardgame.db.model.Account;
 
 import java.io.*;
 import java.net.Socket;
+import java.util.UUID;
 
 public class Connection {
-    private Socket socket;
-    private Account account;
+    private final Socket socket;
+//    private final Account account;
+    private final String name;
 
-    private BufferedReader reader;
-    private PrintWriter writer;
+    private final BufferedReader reader;
+    private final PrintWriter writer;
 
     private Thread inputListener;
 
     public Connection(Socket socket1) {
         socket = socket1;
-        account = null;     ////
+//        account = null;     ////
+        name = UUID.randomUUID().toString().substring(1, 5);
 
         try {
             reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
@@ -48,5 +51,9 @@ public class Connection {
             }
         }
         return false;
+    }
+
+    public String getName() {
+        return name;
     }
 }

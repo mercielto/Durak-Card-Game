@@ -19,7 +19,7 @@ public class DurakGame {
     public static final int maxCardCount = 6;
     public static final int maxPlayersSize = 6;
     public static final int minPlayersSize = 2;
-    public static final int timePerMove = 30000; // in milliseconds
+    public static final int timePerMove = 20000; // in milliseconds
 
     public DurakGame(List<Connection> connections) {
         // creating game.Player based on server.Connection
@@ -37,6 +37,8 @@ public class DurakGame {
         }
 
         trumpCard = deck.pop();
+
+        start();
     }
 
     private Player getPlayer() {

@@ -26,7 +26,6 @@
                    </ChoiceBox>
                   <Label layoutX="337.0" layoutY="119.0" prefHeight="25.0" prefWidth="141.0" text="Room name" textFill="WHITE" />
                   <Label layoutX="337.0" layoutY="169.0" prefHeight="25.0" prefWidth="141.0" text="Max players count" textFill="WHITE" />
-                  <Button disable="true" layoutX="486.0" layoutY="333.0" mnemonicParsing="false" onAction="#startGame" opacity="0.0" prefHeight="32.0" prefWidth="116.0" text="Start" />
                   <ImageView fitHeight="37.0" fitWidth="37.0" layoutX="23.0" layoutY="14.0" onMouseClicked="#backToSearch" opacity="0.47" pickOnBounds="true" preserveRatio="true">
                      <image>
                         <Image url="@images/back.png.png" />
@@ -36,6 +35,7 @@
                   <Button fx:id="createBtn" layoutX="486.0" layoutY="254.0" mnemonicParsing="false" onAction="#createRoom" prefHeight="25.0" prefWidth="90.0" text="Create" />
                   <Label layoutX="337.0" layoutY="84.0" prefHeight="25.0" prefWidth="141.0" text="Room id" textFill="WHITE" />
                   <TextField fx:id="roomId" editable="false" layoutX="486.0" layoutY="84.0" prefHeight="25.0" prefWidth="172.0" text="will be generated" />
+                  <Button fx:id="readyBtn" disable="true" layoutX="382.0" layoutY="321.0" mnemonicParsing="false" onAction="#handleReadyButtonAction" opacity="0.0" prefHeight="32.0" prefWidth="65.0" text="Ready" />
                </children>
                 </AnchorPane>
             </children>
