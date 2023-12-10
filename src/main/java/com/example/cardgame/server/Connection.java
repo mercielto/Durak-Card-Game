@@ -31,11 +31,16 @@ public class Connection {
     }
 
     public void setListener(Thread listener) {
+        listener.start();
+
+        if (inputListener != null) {
+            inputListener.interrupt();
+        }
         inputListener = listener;
-        inputListener.start();
     }
 
     public void write(String text) {
+        System.out.println("%s: send %s".formatted(name, text));
         writer.println(text);
     }
 

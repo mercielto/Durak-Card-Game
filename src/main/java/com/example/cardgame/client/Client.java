@@ -40,9 +40,15 @@ public class Client {
         return inputListener;
     }
 
-    public void setInputListener(Thread inputListener) {
-        this.inputListener = inputListener;
-        inputListener.start();
+    public void setInputListener(Thread inputListener1) {
+        inputListener1.start();
+
+
+        if (inputListener != null) {
+            inputListener.interrupt();
+            System.out.println("Listener interrupted");
+        }
+        inputListener = inputListener1;
     }
 
     public void closeSocket() {

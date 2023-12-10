@@ -1,11 +1,15 @@
 package com.example.cardgame.server.responseGenerator;
 
+import com.example.cardgame.server.game.DurakGame;
+import com.example.cardgame.server.game.Player;
+import com.example.cardgame.gameProperties.cards.Card;
 import com.example.cardgame.properties.ServerProperties;
 import com.example.cardgame.properties.commands.MenuCommands;
 import com.example.cardgame.server.Connection;
 import com.example.cardgame.server.Room;
 import com.example.cardgame.server.ServerSingleton;
 import com.example.cardgame.server.exception.NoRoomFoundException;
+import com.example.cardgame.server.exception.PlayerNotFoundException;
 
 import java.util.List;
 import java.util.StringJoiner;
@@ -31,7 +35,7 @@ public class ServerMainListenerResponseGenerator {
         StringJoiner joiner = new StringJoiner(ServerProperties.getMainDelimiter());
         joiner.add(MenuCommands.GET_PLAYERS_LIST_VIEW.getValue());
         Room room = ServerSingleton.getServer().getRoomByUuid(UUID.fromString(id));
-        for (Connection connection : room.getPlayers()) {
+        for (Connection connection : room.getConnections()) {
             joiner.add(connection.getName());
         }
         return joiner.toString();
@@ -61,7 +65,18 @@ public class ServerMainListenerResponseGenerator {
         return MenuCommands.LEAVE_ROOM.getValue();
     }
 
-    public static String startGame() {
-        return MenuCommands.START_GAME.getValue();
+    public static String startGame(DurakGame game, Connection connection) {
+        StringJoiner joiner = new StringJoiner(ServerProperties.getMainDelimiter());
+        joiner.add(MenuCommands.START_GAME.getValue());
+        joiner.add(game.getTrumpCard().toString());
+        try {
+            Player player = game.getPlayer(connection);
+            for (Card card : player.getCards()) {
+                joiner.add(card.toString());
+            }
+        } catch (PlayerNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+        return joiner.toString();
     }
 }

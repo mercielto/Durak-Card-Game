@@ -1,7 +1,7 @@
 package com.example.cardgame.server.timerTask;
 
-import com.example.cardgame.game.DurakGame;
-import com.example.cardgame.game.Player;
+import com.example.cardgame.server.game.DurakGame;
+import com.example.cardgame.server.game.Player;
 
 import java.util.TimerTask;
 

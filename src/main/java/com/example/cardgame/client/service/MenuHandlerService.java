@@ -3,9 +3,11 @@ package com.example.cardgame.client.service;
 import com.example.cardgame.client.Client;
 import com.example.cardgame.client.ClientSingleton;
 import com.example.cardgame.client.StageSingleton;
+import com.example.cardgame.client.application.GameApplication;
 import com.example.cardgame.client.application.MainApplication;
+import com.example.cardgame.gameProperties.cards.Card;
 import com.example.cardgame.properties.FxmlObjectProperties;
-import com.example.cardgame.client.request.generator.ClientMenuListenerRequestGenerator;
+import com.example.cardgame.client.request.generator.ClientMenuRequestGenerator;
 import com.example.cardgame.client.response.model.RoomResponse;
 import com.example.cardgame.client.response.server_parser.MenuResponseParser;
 import javafx.collections.FXCollections;
@@ -62,7 +64,7 @@ public class MenuHandlerService {
 
     public static void joinRoom(RoomResponse response) {
         Client client = ClientSingleton.getClient();
-        client.write(ClientMenuListenerRequestGenerator.joinRoom(response.getUuid().toString()));
+        client.write(ClientMenuRequestGenerator.joinRoom(response.getUuid().toString()));
     }
 
     public static void updateListView(String name) {
@@ -75,7 +77,7 @@ public class MenuHandlerService {
 
     public static void sendRequestForListView(UUID uuid) {
          Client client = ClientSingleton.getClient();
-         client.write(ClientMenuListenerRequestGenerator.getPlayersListView(uuid.toString()));
+         client.write(ClientMenuRequestGenerator.getPlayersListView(uuid.toString()));
     }
 
     public static void getPlayersListView(String[] names) {
@@ -99,5 +101,21 @@ public class MenuHandlerService {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public static void startGame(List<String> split) {
+        Card trumpCard = Card.getCard(split.get(1));
+        List<Card> handCards = new ArrayList<>();
+        for (String stringCard : split.subList(2, split.size())) {
+            handCards.add(Card.getCard(stringCard));
+        }
+
+        try {
+            (new GameApplication()).start(StageSingleton.getStage());
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+        GameHandlerService.setCardsOnGameStart(trumpCard, handCards);
     }
 }

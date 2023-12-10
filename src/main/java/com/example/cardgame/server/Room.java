@@ -1,14 +1,14 @@
 package com.example.cardgame.server;
 
-import com.example.cardgame.game.DurakGame;
-import com.example.cardgame.server.listener.RoomListener;
+import com.example.cardgame.server.game.DurakGame;
+import com.example.cardgame.server.listener.ServerGameListener;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 public class Room {
-    private final List<Connection> players = new ArrayList<>();
+    private final List<Connection> connections = new ArrayList<>();
     private List<Connection> readyPlayers = new ArrayList<>();
 
     private final UUID uuid = UUID.randomUUID();
@@ -16,7 +16,7 @@ public class Room {
     private int customMinPlayersSize = DurakGame.minPlayersSize;
     private String roomName = String.valueOf(uuid);
 
-    private DurakGame durakGame;
+    private DurakGame game;
 
     public boolean setCustomMaxConnectionsSize(int max) {
         if (max <= DurakGame.maxPlayersSize) {
@@ -39,29 +39,39 @@ public class Room {
     }
 
     public boolean addConnection(Connection connection) {
-        if (players.size() < customMaxPlayersSize) {
-            connection.setListener(new RoomListener(connection, this));
-            players.add(connection);
+        if (connections.size() < customMaxPlayersSize) {
+            connections.add(connection);
             return true;
         }
         return false;
     }
 
     public boolean isOpen() {
-        return players.size() < customMaxPlayersSize;
+        return connections.size() < customMaxPlayersSize;
     }
 
     public void sendMessageToAll(String text) {
-        for (Connection connection : players) {
+        for (Connection connection : connections) {
+            connection.write(text);
+        }
+    }
+
+    public void sendMessageToAll(String text, List<Connection> except) {
+        List<Connection> others = new ArrayList<>(List.copyOf(connections));
+        others.removeAll(except);
+        for (Connection connection : others) {
             connection.write(text);
         }
     }
 
     public void startGame() {
-        if (durakGame == null) {
-            durakGame = new DurakGame(players);
+        if (game == null) {
+            game = new DurakGame(connections);
+            for (Connection connection : connections) {
+                connection.setListener(new ServerGameListener(connection, this));
+            }
         } else {
-            sendMessageToAll("");   // write error message
+            sendMessageToAll("Error");   // write error message
         }
     }
 
@@ -74,7 +84,7 @@ public class Room {
     }
 
     public boolean contains(Connection connection) {
-        for (Connection pConnection : players) {
+        for (Connection pConnection : connections) {
             if (pConnection.equals(connection)) {
                 return true;
             }
@@ -83,27 +93,27 @@ public class Room {
     }
 
     public void removeConnection(Connection connection) {
-        players.remove(connection);
+        connections.remove(connection);
     }
 
     public int getPlayersCount() {
-        return players.size();
+        return connections.size();
     }
 
     public int getCustomMaxPlayersSize() {
         return customMaxPlayersSize;
     }
 
-    public List<Connection> getPlayers() {
-        return players;
+    public List<Connection> getConnections() {
+        return connections;
     }
 
     public boolean isFull() {
-        return players.size() == customMaxPlayersSize;
+        return connections.size() == customMaxPlayersSize;
     }
 
     public void setReadyPlayer(Connection connection) {
-        if (players.contains(connection)) {
+        if (connections.contains(connection)) {
             readyPlayers.add(connection);
         }
     }
@@ -117,10 +127,14 @@ public class Room {
     }
 
     public boolean isGameIsOn() {
-        return durakGame != null;
+        return game != null;
     }
 
     public boolean isEveryoneReady() {
-        return readyPlayers.size() == players.size();
+        return readyPlayers.size() == connections.size();
+    }
+
+    public DurakGame getGame() {
+        return game;
     }
 }

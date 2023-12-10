@@ -5,7 +5,7 @@ import com.example.cardgame.client.ClientSingleton;
 import com.example.cardgame.client.StageSingleton;
 import com.example.cardgame.client.application.CreateRoomApplication;
 import com.example.cardgame.client.application.JoinRoomApplication;
-import com.example.cardgame.client.request.generator.ClientMenuListenerRequestGenerator;
+import com.example.cardgame.client.request.generator.ClientMenuRequestGenerator;
 import com.example.cardgame.client.response.model.RoomResponse;
 import javafx.fxml.FXML;
 import javafx.scene.control.ChoiceBox;
@@ -31,7 +31,7 @@ public class MainController {
         String searchParameter = searchTextField.getText();
 
         Client client = ClientSingleton.getClient();
-        client.write(ClientMenuListenerRequestGenerator.getAvailableRooms(property, searchParameter));
+        client.write(ClientMenuRequestGenerator.getAvailableRooms(property, searchParameter));
     }
 
     @FXML

@@ -4,10 +4,7 @@ import com.example.cardgame.client.Client;
 import com.example.cardgame.client.ClientSingleton;
 import com.example.cardgame.client.StageSingleton;
 import com.example.cardgame.client.application.MainApplication;
-import com.example.cardgame.client.request.generator.ClientMenuListenerRequestGenerator;
-import com.example.cardgame.client.service.FxmlObjectsGetter;
-import com.example.cardgame.properties.FxmlObjectProperties;
-import javafx.collections.FXCollections;
+import com.example.cardgame.client.request.generator.ClientMenuRequestGenerator;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
@@ -15,7 +12,6 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 
 import java.io.IOException;
-import java.util.List;
 
 
 public class CreateRoomController {
@@ -37,7 +33,7 @@ public class CreateRoomController {
     private void backToSearch() throws IOException {
         Client client = ClientSingleton.getClient();
         if (createBtn.isDisable()) {
-            client.write(ClientMenuListenerRequestGenerator.leaveRoom());
+            client.write(ClientMenuRequestGenerator.leaveRoom());
         }
         (new MainApplication()).start(StageSingleton.getStage());
     }
@@ -45,7 +41,7 @@ public class CreateRoomController {
     @FXML
     private void createRoom() {
         Client client = ClientSingleton.getClient();
-        client.write(ClientMenuListenerRequestGenerator
+        client.write(ClientMenuRequestGenerator
                 .createRoom(
                         roomName.getText(),
                         Integer.valueOf(maxPlayersCount.getValue()))
@@ -56,7 +52,7 @@ public class CreateRoomController {
     private void handleReadyButtonAction() {
         Client client = ClientSingleton.getClient();
         client.write(
-                ClientMenuListenerRequestGenerator.ready()
+                ClientMenuRequestGenerator.ready()
         );
     }
 }

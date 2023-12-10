@@ -5,6 +5,9 @@ public class ServerProperties {
     private static final Integer port = 8889;
     private static final String mainDelimiter = "@";
     private static final String sideDelimiter = "~";
+    private static final String storagePath = "C:\\Works\\Durak Card Game" +
+            "\\src\\main\\resources\\com\\example\\cardgame\\client\\application\\images\\";
+    private static final String cardImagesStoragePath = storagePath + "cards\\";
 
     public static String getHost() {
         return host;
@@ -20,5 +23,13 @@ public class ServerProperties {
 
     public static String getSideDelimiter() {
         return sideDelimiter;
+    }
+
+    public static String getStoragePath() {
+        return storagePath;
+    }
+
+    public static String getCardImagesStoragePath() {
+        return cardImagesStoragePath;
     }
 }

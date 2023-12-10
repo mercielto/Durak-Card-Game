@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.cardgame.client.controller.GameController">
+   <children>
+      <VBox alignment="CENTER" style="-fx-background-color: #025026;">
+          <children>
+              <FlowPane alignment="CENTER" style="-fx-control-inner-background: #025026;">
+                  <children>
+                      <AnchorPane prefHeight="492.0" prefWidth="889.0" style="-fx-border-color: black;">
+                     <children>
+                        <Button layoutX="749.0" layoutY="420.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="105.0" text="Button" />
+                        <AnchorPane layoutX="146.0" layoutY="16.0" prefHeight="46.0" prefWidth="593.0" style="-fx-border-color: BLACK;">
+                           <children>
+                              <AnchorPane layoutX="259.0" layoutY="5.0" prefHeight="26.0" prefWidth="65.0" style="-fx-border-color: black;">
+                                 <children>
+                                    <ImageView fitHeight="26.0" fitWidth="39.0" layoutX="23.0" layoutY="2.0" pickOnBounds="true" preserveRatio="true" />
+                                 </children>
+                              </AnchorPane>
+                           </children></AnchorPane>
+                        <AnchorPane fx:id="tableCardsPane" layoutX="185.0" layoutY="111.0" onMouseClicked="#onTableClickHandler" prefHeight="202.0" prefWidth="515.0" style="-fx-border-color: black;" />
+                        <AnchorPane layoutX="678.0" layoutY="127.0" minHeight="0.0" minWidth="0.0" prefHeight="159.0" prefWidth="197.0" />
+                        <AnchorPane fx:id="handCardsPane" layoutX="165.0" layoutY="372.0" prefHeight="121.0" prefWidth="556.0" style="-fx-border-color: black;">
+                           <padding>
+                              <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                           </padding>
+                        </AnchorPane>
+                        <Label fx:id="informationLabel" layoutX="19.0" layoutY="407.0" prefHeight="46.0" prefWidth="127.0" textFill="#ce1515">
+                           <font>
+                              <Font name="Bauhaus 93" size="25.0" />
+                           </font>
+                        </Label>
+                        <Label fx:id="alertLabel" alignment="CENTER" layoutX="134.0" layoutY="72.0" prefHeight="30.0" prefWidth="622.0" textAlignment="CENTER" textFill="#ce1515">
+                           <font>
+                              <Font size="20.0" />
+                           </font>
+                        </Label>
+                        <ImageView fx:id="trumpCard" fitHeight="101.0" fitWidth="65.0" layoutX="34.0" layoutY="192.0" pickOnBounds="true" preserveRatio="true" rotate="90.0">
+                           <image>
+                              <Image url="@images/rubaskka-kart.png.png" />
+                           </image>
+                        </ImageView>
+                        <ImageView fitHeight="101.0" fitWidth="65.0" layoutX="20.0" layoutY="179.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@images/rubaskka-kart.png.png" />
+                           </image>
+                        </ImageView>
+                     </children>
+                  </AnchorPane>
+                  </children>
+              </FlowPane>
+          </children>
+      </VBox>
+   </children>
+</AnchorPane>

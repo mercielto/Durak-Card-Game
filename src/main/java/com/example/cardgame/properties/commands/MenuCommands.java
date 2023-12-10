@@ -1,6 +1,6 @@
 package com.example.cardgame.properties.commands;
 
-import com.example.cardgame.server.exception.CommandNotDefinedException;
+import com.example.cardgame.gameProperties.exception.CommandNotDefinedException;
 
 import java.util.Objects;
 

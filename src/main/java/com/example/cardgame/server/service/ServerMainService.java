@@ -12,6 +12,7 @@ import com.example.cardgame.server.timerTask.ConnectionReadyDurationTask;
 
 import java.util.List;
 import java.util.Timer;
+import java.util.TimerTask;
 import java.util.UUID;
 
 public class ServerMainService {
@@ -111,10 +112,21 @@ public class ServerMainService {
             room.setReadyPlayer(connection);
 
             if (room.isEveryoneReady()) {
-                room.sendMessageToAll(
-                        ServerMainListenerResponseGenerator.startGame()
-                );
                 room.startGame();
+                for (Connection conn : room.getConnections()) {
+                    conn.write(
+                            ServerMainListenerResponseGenerator.startGame(room.getGame(), conn)
+                    );
+                }
+
+                // на клиенте идёт смена listener, из-за чего ему нужно чуть больше времени
+                Timer timer = new Timer();
+                timer.schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        room.getGame().start();
+                    }
+                }, 2000);
             }
 
         } catch (NoRoomFoundException e) {

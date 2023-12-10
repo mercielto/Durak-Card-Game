@@ -24,7 +24,7 @@ public class ConnectionReadyDurationTask extends TimerTask {
         }
 
         if (readyPLayers.size() != room.getPlayersCount()) {
-            for (Connection connection : new ArrayList<>(room.getPlayers())) {
+            for (Connection connection : new ArrayList<>(room.getConnections())) {
                 if (!readyPLayers.contains(connection)) {
                     room.removeConnection(connection);
                     connection.write(
