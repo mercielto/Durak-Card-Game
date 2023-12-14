@@ -2,14 +2,12 @@ package com.example.cardgame.server.listener;
 
 import com.example.cardgame.properties.ServerProperties;
 import com.example.cardgame.properties.commands.GameCommands;
-import com.example.cardgame.properties.commands.MenuCommands;
 import com.example.cardgame.server.Connection;
 import com.example.cardgame.server.Room;
 import com.example.cardgame.server.exception.PlayerNotFoundException;
 import com.example.cardgame.server.game.DurakGame;
 import com.example.cardgame.server.game.Player;
 import com.example.cardgame.server.service.ServerGameService;
-import com.example.cardgame.server.service.ServerMainService;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -46,6 +44,8 @@ public class ServerGameListener extends Thread {
                         switch (command) {
                             case NEW_CARD_ON_TABLE ->
                                     ServerGameService.handleNewCardOnTable(splitMessage, player, room);
+                            case BEAT_CARD -> ServerGameService.handleBeatCard(game, player, splitMessage);
+                            case END_MOVE -> ServerGameService.handleEndMove(game, player);
                         }
                     }
                 }

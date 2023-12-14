@@ -50,4 +50,13 @@ public class Player {
     public Connection getConnection() {
         return connection;
     }
+
+    public void removeCard(Card card) {
+        for (Card card1 : cards) {
+            if (card.equals(card1)) {
+                cards.remove(card1);
+                return;
+            }
+        }
+    }
 }

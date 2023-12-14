@@ -1,15 +1,14 @@
 package com.example.cardgame.server;
 
 import com.example.cardgame.server.game.DurakGame;
+import com.example.cardgame.server.game.Player;
 import com.example.cardgame.server.listener.ServerGameListener;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public class Room {
     private final List<Connection> connections = new ArrayList<>();
-    private List<Connection> readyPlayers = new ArrayList<>();
+    private Set<Connection> readyPlayers = new HashSet<>();
 
     private final UUID uuid = UUID.randomUUID();
     private int customMaxPlayersSize = DurakGame.maxPlayersSize;
@@ -66,7 +65,7 @@ public class Room {
 
     public void startGame() {
         if (game == null) {
-            game = new DurakGame(connections);
+            game = new DurakGame(this);
             for (Connection connection : connections) {
                 connection.setListener(new ServerGameListener(connection, this));
             }
@@ -118,7 +117,7 @@ public class Room {
         }
     }
 
-    public List<Connection> getReadyPlayers() {
+    public Set<Connection> getReadyPlayers() {
         return readyPlayers;
     }
 
@@ -136,5 +135,24 @@ public class Room {
 
     public DurakGame getGame() {
         return game;
+    }
+
+    public void sendMessageToConnectionsInGame(String text) {
+        if (game != null) {
+            List<Player> players = game.getPlayers();
+            for (Player player : players) {
+                player.getConnection().write(text);
+            }
+        }
+    }
+
+    public void sendMessageToConnectionsInGame(String text, List<Player> except) {
+        if (game != null) {
+            List<Player> players = new ArrayList<>(game.getPlayers());
+            players.removeAll(except);
+            for (Player player : players) {
+                player.getConnection().write(text);
+            }
+        }
     }
 }

@@ -16,7 +16,7 @@ import java.util.UUID;
 
 public class Server {
     private List<Connection> connections = new ArrayList<>();
-    public List<Room> rooms = new ArrayList<>();            /// should be private
+    private List<Room> rooms = new ArrayList<>();
 
     public void start() {
         try (ServerSocket serverSocket = new ServerSocket(ServerProperties.getPort())) {

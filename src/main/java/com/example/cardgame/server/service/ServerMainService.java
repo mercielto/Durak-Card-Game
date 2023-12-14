@@ -133,4 +133,8 @@ public class ServerMainService {
             throw new RuntimeException(e);
         }
     }
+
+    public static void setName(Connection connection, String name) {
+        connection.setName(name);
+    }
 }

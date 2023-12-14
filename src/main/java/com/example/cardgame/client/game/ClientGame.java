@@ -148,7 +148,7 @@ public class ClientGame {
     public boolean canBeatCard() {
         Client client = ClientSingleton.getClient();
         int nextPlayer = (currentPlayer + 1) % players.size();
-        return players.get(nextPlayer).equals(client.getName());
+        return players.get(nextPlayer).getName().equals(client.getName());
     }
 
     public void setCanMove(boolean canMove) {

@@ -1,11 +1,10 @@
 package com.example.cardgame.client.controller;
 
-import com.example.cardgame.client.GameSingleton;
-import com.example.cardgame.client.game.CardImageView;
+import com.example.cardgame.client.ClientGameSingleton;
+import com.example.cardgame.client.game.CardEntity;
 import com.example.cardgame.client.game.ClientGame;
-import com.example.cardgame.client.timerTask.AlertRemovingTask;
+import com.example.cardgame.client.service.GameHandlerService;
 import com.example.cardgame.gameProperties.cards.Card;
-import com.example.cardgame.server.service.ServerGameService;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
@@ -15,8 +14,9 @@ import javafx.scene.layout.AnchorPane;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
+
+import static com.example.cardgame.client.service.GameHandlerService.canAddCardOnTable;
+import static com.example.cardgame.client.service.GameHandlerService.setAlert;
 
 public class GameController {
     @FXML
@@ -30,33 +30,36 @@ public class GameController {
 
     @FXML
     public void onTableClickHandler() {
-        ClientGame game = GameSingleton.getGame();
-        CardImageView selectedCard = game.getSelectedCard();
-        ImageView imageView = selectedCard.getImg();
-
-        if (game.getSelectedCard() == null) {
-            alertLabel.setText("CARD NOT SELECTED");
-            Timer timer = new Timer();
-            timer.schedule(new AlertRemovingTask(alertLabel), 5000);
+        if (!canAddCardOnTable(alertLabel)) {
             return;
         }
 
+        ClientGame game = ClientGameSingleton.getGame();
+        CardEntity selectedCard = game.getSelectedCard();
 
-        if (!game.getCanMove()) {
-            alertLabel.setText("NOT YOUR MOVE YET");
-            Timer timer = new Timer();
-            timer.schedule(new AlertRemovingTask(alertLabel), 5000);
+        if (!game.canBeAddedToTable(selectedCard)) {
+            setAlert(alertLabel, "YOU CAN NOT MOVE THIS CARD");
             return;
         }
 
-        Card card = selectedCard.getCard();
+        handCardsPane.getChildren().remove(selectedCard.getImg());
 
-        handCardsPane.getChildren().remove(imageView);
-        tableCardsPane.getChildren().add(imageView);
-        imageView.setY(0);
-
+        GameHandlerService.addNewCardOnTable(selectedCard, tableCardsPane);
+        selectedCard.getImg().setOnMouseClicked(null);
         game.addCardOnTable(selectedCard);
-        ServerGameService.newCardOnTable(card);
+        game.removeSelectedCard();
+        game.removeCardFromHands(selectedCard);
+        GameHandlerService.newCardOnTable(selectedCard);
+
+//        double pos = tableCardsPane.getWidth() / 6;
+//        imageView.setX(pos * tableCardsPane.getChildren().size());
+//        imageView.setLayoutY(0);
+//        imageView.setOnMouseClicked(null);
+//
+//
+//        tableCardsPane.getChildren().add(imageView);
+//
+//        game.addCardOnTable(selectedCard);
     }
 
     private List<Card> getCardsOnTable() {

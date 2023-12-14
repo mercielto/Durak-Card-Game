@@ -14,7 +14,8 @@ public enum MenuCommands {
     SOMEONE_JOINED_ROOM("6"),
     GET_PLAYERS_LIST_VIEW("7"),
     WAITING_FOR_CONFIRMATION("8"),
-    READY("9");
+    READY("9"),
+    SET_NAME("10");
 
     private String value;
     MenuCommands(String v) {

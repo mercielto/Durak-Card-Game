@@ -35,6 +35,7 @@ public class ClientGameListener extends Thread {
                             case BEAT_CARD -> GameHandlerService.handleBeatCard(split);
                             case ADD_NEW_CARDS -> GameHandlerService.handleAddNewCards(split);
                             case END_MOVE -> GameHandlerService.handleEndMove();
+                            case ADD_NEW_CARDS_TO_USER -> GameHandlerService.handleNewCardToUser(split);
                         }
                     });
                 }

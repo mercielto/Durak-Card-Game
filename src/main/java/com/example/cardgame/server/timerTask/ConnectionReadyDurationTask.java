@@ -6,6 +6,7 @@ import com.example.cardgame.server.responseGenerator.ServerMainListenerResponseG
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.TimerTask;
 
 public class ConnectionReadyDurationTask extends TimerTask {
@@ -17,7 +18,7 @@ public class ConnectionReadyDurationTask extends TimerTask {
 
     @Override
     public void run() {
-        List<Connection> readyPLayers = room.getReadyPlayers();
+        Set<Connection> readyPLayers = room.getReadyPlayers();
 
         if (room.isGameIsOn()) {
             return;

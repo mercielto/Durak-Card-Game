@@ -173,6 +173,10 @@ public class DurakGame {
         List<Card> cards = new ArrayList<>();
         int cardsCount = player.getCardsCount();
         for (int i = 0; i < maxCardCount - cardsCount; i++) {
+            if (deck.size() == 0) {
+                break;
+            }
+
             Card card = deck.pop();
             cards.add(card);
             player.addCard(card);

@@ -8,6 +8,7 @@ public class ServerProperties {
     private static final String storagePath = "C:\\Works\\Durak Card Game" +
             "\\src\\main\\resources\\com\\example\\cardgame\\client\\application\\images\\";
     private static final String cardImagesStoragePath = storagePath + "cards\\";
+    private static final String avatarImagesStoragePath = storagePath + "avatar\\";
 
     public static String getHost() {
         return host;
@@ -31,5 +32,9 @@ public class ServerProperties {
 
     public static String getCardImagesStoragePath() {
         return cardImagesStoragePath;
+    }
+
+    public static String getAvatarImagesStoragePath() {
+        return avatarImagesStoragePath;
     }
 }

@@ -6,7 +6,7 @@ import com.example.cardgame.client.StageSingleton;
 import com.example.cardgame.client.application.GameApplication;
 import com.example.cardgame.client.application.MainApplication;
 import com.example.cardgame.gameProperties.cards.Card;
-import com.example.cardgame.properties.FxmlObjectProperties;
+import com.example.cardgame.client.FxmlObjectProperties;
 import com.example.cardgame.client.request.generator.ClientMenuRequestGenerator;
 import com.example.cardgame.client.response.model.RoomResponse;
 import com.example.cardgame.client.response.server_parser.MenuResponseParser;

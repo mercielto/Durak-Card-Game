@@ -57,4 +57,9 @@ public class PlayerEntity {
         }
         return false;
     }
+
+    public void addCards(int i) {
+        cardsCount += i;
+        cardsCountLabel.setText(String.valueOf(cardsCount));
+    }
 }
