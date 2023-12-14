@@ -16,10 +16,7 @@ public class ClientMenuListener extends Thread {
         BufferedReader reader = ClientSingleton.getClient().getReader();
         while (!isInterrupted()) {
             try {
-                if (interrupted()) {
-                    break;
-                }
-                if (reader.ready() && !interrupted()) {
+                if (reader.ready() && !isInterrupted()) {
                     String message = reader.readLine();
                     System.out.println("MenuListener: Received " + message);
                     if (!isInterrupted()) {

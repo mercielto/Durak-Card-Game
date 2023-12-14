@@ -2,7 +2,7 @@ package com.example.cardgame.client;
 
 import com.example.cardgame.client.game.ClientGame;
 
-public class GameSingleton {
+public class ClientGameSingleton {
     private static ClientGame game;
 
     public static ClientGame getGame() {

@@ -16,7 +16,7 @@ public class ClientGameListener extends Thread {
         BufferedReader reader = ClientSingleton.getClient().getReader();
         while (true) {
             try {
-                if (interrupted()) {
+                if (isInterrupted()) {
                     break;
                 }
 
@@ -31,6 +31,10 @@ public class ClientGameListener extends Thread {
                             case YOUR_MOVE -> GameHandlerService.handleYourMove();
                             case NOT_YOUR_MOVE_YET -> GameHandlerService.handleNotYourMove();
                             case NEW_CARD_ON_TABLE -> GameHandlerService.handleNewCardOnTable(split);
+                            case SET_PLAYERS_ORDER -> GameHandlerService.setPlayersOrder(split[1]);
+                            case BEAT_CARD -> GameHandlerService.handleBeatCard(split);
+                            case ADD_NEW_CARDS -> GameHandlerService.handleAddNewCards(split);
+                            case END_MOVE -> GameHandlerService.handleEndMove();
                         }
                     });
                 }

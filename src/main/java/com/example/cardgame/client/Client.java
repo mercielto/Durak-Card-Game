@@ -13,8 +13,7 @@ public class Client {
     private Thread inputListener;
     private String name;
 
-    public Client(String name1) {
-        name = name1;
+    public Client() {
         try {
             clientSocket = new Socket(ServerProperties.getHost(), ServerProperties.getPort());
 
@@ -77,5 +76,6 @@ public class Client {
 
     public void setName(String name) {
         this.name = name;
+
     }
 }

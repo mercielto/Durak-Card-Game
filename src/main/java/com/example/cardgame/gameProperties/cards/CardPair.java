@@ -12,16 +12,24 @@ public class CardPair {
         trumpSuit = s;
     }
 
-    public boolean isBeats(Card secondCard) {
+    public boolean beats(Card secondCard) {
         if (second != null) {
             return false;
         }
 
-        if (first.getSuit() == secondCard.getSuit() && first.getValue().isBigger(secondCard.getValue()) ||
-            secondCard.getSuit() == trumpSuit) {
+        if ((first.getSuit() == secondCard.getSuit() && secondCard.getValue().isBigger(first.getValue()) )
+                || (secondCard.getSuit() == trumpSuit && first.getSuit() != trumpSuit)) {
             second = secondCard;
             return true;
         }
         return false;
+    }
+
+    public Card getFirst() {
+        return first;
+    }
+
+    public Card getSecond() {
+        return second;
     }
 }

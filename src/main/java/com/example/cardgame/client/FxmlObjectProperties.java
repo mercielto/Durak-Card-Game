@@ -1,4 +1,4 @@
-package com.example.cardgame.properties;
+package com.example.cardgame.client;
 
 public class FxmlObjectProperties {
     public static final String menuListViewId = "#listViewRooms";
@@ -13,8 +13,21 @@ public class FxmlObjectProperties {
     public static final String informationLabelId = "#informationLabel";
     public static final String tableCardsPaneId = "#tableCardsPane";
     public static final String alertLabelId = "#alertLabel";
+    public static final String buttonPositionId = "#buttonPosition";
+    public static final String playersListPaneId = "#playersListPane";
 
 
     public static final int cardWidth = 65;
     public static final int cardHeight = 101;
+
+    public static final double anchorPaneForUserWidth = 65;
+    public static final double anchorPaneForUserHeight = 100;
+
+    public static final double userImageInGameWidth = 50;
+    public static final double userImageInGameHeight = 50;
+
+    public static final double userNameLabelWidth = 65;
+    public static final double userNameLabelHeight = 26;
+
+
 }

@@ -9,7 +9,7 @@ import java.util.UUID;
 public class Connection {
     private final Socket socket;
 //    private final Account account;
-    private final String name;
+    private String name = "Not set";
 
     private final BufferedReader reader;
     private final PrintWriter writer;
@@ -19,7 +19,6 @@ public class Connection {
     public Connection(Socket socket1) {
         socket = socket1;
 //        account = null;     ////
-        name = UUID.randomUUID().toString().substring(1, 5);
 
         try {
             reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
@@ -60,5 +59,9 @@ public class Connection {
 
     public String getName() {
         return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }

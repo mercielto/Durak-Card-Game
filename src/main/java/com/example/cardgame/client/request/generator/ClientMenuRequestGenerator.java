@@ -51,4 +51,11 @@ public class ClientMenuRequestGenerator {
     public static String ready() {
         return MenuCommands.READY.getValue();
     }
+
+    public static String setName(String name) {
+        StringJoiner joiner = new StringJoiner(ServerProperties.getMainDelimiter());
+        joiner.add(MenuCommands.SET_NAME.getValue());
+        joiner.add(name);
+        return joiner.toString();
+    }
 }
