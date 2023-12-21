@@ -11,4 +11,8 @@ public class ClientGameSingleton {
         }
         return game;
     }
+
+    public static void clear() {
+        game = null;
+    }
 }

@@ -4,6 +4,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.UUID;
 import java.util.List;
 
@@ -15,11 +16,15 @@ public class RoomResponse {
     private UUID uuid;
     private int playersCount;
     private int maxPlayersCount;
-//    private List<String> players;
+    private List<String> players;
 
     @Override
     public String toString() {
         return "%s\t(%s)\t%s/%s".formatted(name, uuid.toString(), playersCount, maxPlayersCount);
+    }
+
+    public void setPlayers(List<String> players) {
+        this.players = new ArrayList<>(players);
     }
 
     public static RoomResponse parse(String text) {
@@ -31,5 +36,20 @@ public class RoomResponse {
                 .playersCount(Integer.parseInt(count[0]))
                 .maxPlayersCount(Integer.parseInt(count[1]))
                 .build();
+    }
+
+    public void reducePlayersCount() {
+        playersCount--;
+    }
+
+    public void removePlayer(String s) {
+        players.remove(s);
+        reducePlayersCount();
+    }
+
+    public void addPlayer(String name) {
+        if (players != null) {
+            players.add(name);
+        }
     }
 }

@@ -1,12 +1,9 @@
 package com.example.cardgame.client.service;
 
-import com.example.cardgame.client.Client;
-import com.example.cardgame.client.ClientSingleton;
-import com.example.cardgame.client.StageSingleton;
+import com.example.cardgame.client.*;
 import com.example.cardgame.client.application.GameApplication;
 import com.example.cardgame.client.application.MainApplication;
 import com.example.cardgame.gameProperties.cards.Card;
-import com.example.cardgame.client.FxmlObjectProperties;
 import com.example.cardgame.client.request.generator.ClientMenuRequestGenerator;
 import com.example.cardgame.client.response.model.RoomResponse;
 import com.example.cardgame.client.response.server_parser.MenuResponseParser;
@@ -47,14 +44,23 @@ public class MenuHandlerService {
         ObservableList<String> roomsObservableList = FXCollections.observableArrayList(player);
         listView.setItems(roomsObservableList);
 
+        RoomResponse roomResponse = RoomResponse.builder()
+                .uuid(UUID.fromString(id))
+                .players(new ArrayList<>(List.of(player)))
+                .maxPlayersCount(Integer.parseInt(maxPlayersCount.getValue()))
+                .build();
+
         if (roomName.getText().length() == 0) {
+            roomResponse.setName(id);
             roomName.setText(id);
         }
         roomId.setText(id);
         roomId.setEditable(false);
         maxPlayersCount.setDisable(true);
         createBtn.setDisable(true);
-        roomName.setDisable(true);
+        roomName.setEditable(false);
+
+        ClientRoomSingleton.setRoom(roomResponse);
     }
 
     public static String getPlayerInfo() {
@@ -67,12 +73,19 @@ public class MenuHandlerService {
         client.write(ClientMenuRequestGenerator.joinRoom(response.getUuid().toString()));
     }
 
-    public static void updateListView(String name) {
-        ListView<String> listView = FxmlObjectsGetter.getListViewById(FxmlObjectProperties.roomListViewId);
-        List<String> list = listView.getItems();
+    public static void addPlayerToListView(String name) {
+        ClientRoomSingleton.getRoom().addPlayer(name);
+        updateListView();
+//        ListView<String> listView = FxmlObjectsGetter.getListViewById(FxmlObjectProperties.roomListViewId);
+//        List<String> list = listView.getItems();
+//
+//        list.add(name);
+//        listView.setItems(FXCollections.observableList(list));
+    }
 
-        list.add(name);
-        listView.setItems(FXCollections.observableList(list));
+    private static void updateListView() {
+        ListView<String> listView = FxmlObjectsGetter.getListViewById(FxmlObjectProperties.roomListViewId);
+        listView.setItems(FXCollections.observableList(ClientRoomSingleton.getRoom().getPlayers()));
     }
 
     public static void sendRequestForListView(UUID uuid) {
@@ -87,6 +100,8 @@ public class MenuHandlerService {
 
         ListView<String> listView = FxmlObjectsGetter.getListViewById(FxmlObjectProperties.roomListViewId);
         listView.setItems(roomsObservableList);
+
+        ClientRoomSingleton.getRoom().setPlayers(namesList);
     }
 
     public static void waitingForConfirmation() {
@@ -117,5 +132,12 @@ public class MenuHandlerService {
         }
 
         GameHandlerService.setCardsOnGameStart(trumpCard, handCards);
+    }
+
+    public static void handleConnectionLeftRoom(String[] split) {
+        RoomResponse room = ClientRoomSingleton.getRoom();
+        room.removePlayer(split[1]);
+
+        updateListView();
     }
 }

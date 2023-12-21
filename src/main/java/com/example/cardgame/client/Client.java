@@ -42,10 +42,10 @@ public class Client {
     public void setInputListener(Thread inputListener1) {
         inputListener1.start();
 
-
         if (inputListener != null) {
             inputListener.interrupt();
             System.out.println("Listener interrupted");
+
         }
         inputListener = inputListener1;
     }
@@ -59,6 +59,7 @@ public class Client {
     }
 
     public void write(String text) {
+        System.out.println("Sending to server --- %s".formatted(text));
         out.println(text);
     }
 

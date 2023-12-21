@@ -1,29 +1,28 @@
 package com.example.cardgame.client.service;
 
-import com.example.cardgame.client.Client;
-import com.example.cardgame.client.ClientSingleton;
-import com.example.cardgame.client.ClientGameSingleton;
+import com.example.cardgame.client.*;
 import com.example.cardgame.client.game.CardEntity;
 import com.example.cardgame.client.game.ClientGame;
 import com.example.cardgame.client.game.PlayerEntity;
 import com.example.cardgame.client.request.generator.ClientGameRequestGenerator;
 import com.example.cardgame.client.timerTask.AlertRemovingTask;
+import com.example.cardgame.client.timerTask.EndOfMoveTask;
 import com.example.cardgame.gameProperties.cards.Card;
-import com.example.cardgame.client.FxmlObjectProperties;
 import com.example.cardgame.properties.ServerProperties;
 import com.example.cardgame.server.exception.PlayerNotFoundException;
-import com.example.cardgame.server.game.Player;
+import javafx.animation.TranslateTransition;
+import javafx.collections.ObservableList;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
+import javafx.util.Duration;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Timer;
+import java.util.*;
 
 public class GameHandlerService {
     public static void newCardOnTable(Card card) {
@@ -115,9 +114,16 @@ public class GameHandlerService {
     }
 
     public static void handleYourMove() {
-        ClientGameSingleton.getGame().setCanMove(true);
+        ClientGame game = ClientGameSingleton.getGame();
+        game.setCanMove(true);
+
         Label label = FxmlObjectsGetter.getLabelById(FxmlObjectProperties.informationLabelId);
         label.setText("YOUR MOVE");
+
+        if (game.getCardsOnTable().size() != 0) {
+            addBeatButton();
+        }
+
     }
 
 //    public static void cardIsNotSelectedExceptionHandler() {
@@ -130,22 +136,27 @@ public class GameHandlerService {
     public static void handleNotYourMove() {
     }
 
-    public static void setAlert(Label alertLabel, String text) {
+    public static void setLabel(Label alertLabel, TimerTask task, String text) {
         alertLabel.setText(text);
         Timer timer = new Timer();
-        timer.schedule(new AlertRemovingTask(alertLabel), 5000);
+        timer.schedule(task, 5000);
+    }
+
+    public static void setAlert(String text) {
+        Label alertLabel = FxmlObjectsGetter.getLabelById(FxmlObjectProperties.alertLabelId);
+        setLabel(alertLabel, new AlertRemovingTask(alertLabel), text);
     }
 
     public static boolean canAddCardOnTable(Label alertLabel) {
         ClientGame game = ClientGameSingleton.getGame();
         if (game.getSelectedCard() == null) {
-            setAlert(alertLabel, "CARD NOT SELECTED");
+            setAlert("CARD NOT SELECTED");
             return false;
         }
 
 
         if (!game.canAddCardOnTable()) {
-            setAlert(alertLabel, "NOT YOUR MOVE YET");
+            setAlert("NOT YOUR MOVE YET");
             return false;
         }
 
@@ -163,12 +174,18 @@ public class GameHandlerService {
             throw new RuntimeException(e);
         }
 
+        if (game.canBeatCard()) {
+            addTakeCardsButton();
+        }
+
         player.reduceCardsCount();
 
         ImageView imageView = FxmlObjectsGetter.createImageViewForCard(card);
 
+//        imageView.setLayoutX(player.getPane().getLayoutX());
+//        imageView.setLayoutY(player.getPane().getLayoutY());
+
         imageView.setOnMouseClicked(mouseEvent -> {
-            Label alertLabel = FxmlObjectsGetter.getLabelById(FxmlObjectProperties.alertLabelId);
             AnchorPane pane = FxmlObjectsGetter.getAnchorPaneById(FxmlObjectProperties.tableCardsPaneId);
             
             Client client = ClientSingleton.getClient();
@@ -186,11 +203,23 @@ public class GameHandlerService {
                     client.write(
                             ClientGameRequestGenerator.beatCard(cardToBeat, selectedCard)
                     );
+
+                    if (game.isThereCardsToBeat()) {
+                        addTakeCardsButton();
+                    } else {
+                        removeButtonsFromPositionPane();
+                    }
+
+                    if (game.getCardsOnHands().size() == 0) {
+                        client.write(
+                                ClientGameRequestGenerator.forcedEndOfMove()
+                        );
+                    }
                 } else {
                     // TODO: сделать так, чтобы onClick выполнялся только над изображением карты
                     //  (над anchorpane нужно убрать)
                     System.out.println("Alert: \"THIS CARD CANNOT BEAT THE SELECTED CARD\"");
-                    setAlert(alertLabel, "THIS CARD CANNOT BEAT THE SELECTED CARD");
+                    setAlert("THIS CARD CANNOT BEAT THE SELECTED CARD");
                 }
             }
         });
@@ -199,6 +228,43 @@ public class GameHandlerService {
         CardEntity newCard = new CardEntity(imageView, card);
         addNewCardOnTable(newCard, table);
         ClientGameSingleton.getGame().addCardOnTable(newCard);
+    }
+
+    public static void removeButtonsFromPositionPane() {
+        AnchorPane pane = FxmlObjectsGetter.getAnchorPaneById(FxmlObjectProperties.buttonPositionId);
+        pane.getChildren().clear();
+    }
+    
+    public static void setTranslationOfCard(Node node, double setByX, double setByY) {
+        TranslateTransition translateTransition = new TranslateTransition();
+        translateTransition.setDuration(Duration.millis(5000));
+        translateTransition.setNode(node);
+        translateTransition.setByX(setByX);
+        translateTransition.setByY(setByY);
+        translateTransition.setAutoReverse(false);
+        translateTransition.play();
+    }
+
+    public static void addTakeCardsButton() {
+        AnchorPane pane = FxmlObjectsGetter.getAnchorPaneById(FxmlObjectProperties.buttonPositionId);
+        ObservableList<Node> children = pane.getChildren();
+
+        Button button = new Button("Take cards");
+        button.setOnAction(actionEvent -> {
+            ClientGame game = ClientGameSingleton.getGame();
+            game.takeTableCardsOnHands();
+            game.next();
+            game.next();
+            children.clear();
+            ClientSingleton.getClient().write(
+                    ClientGameRequestGenerator.takeCards()
+            );
+            updateCardsOnHands();
+            clearCardsOnTable();
+        });
+
+        children.clear();
+        children.add(button);
     }
 
     public static void setBeatCardPosition(ImageView img, AnchorPane pane, CardEntity cardToBeat) {
@@ -217,6 +283,11 @@ public class GameHandlerService {
         ClientGame game = ClientGameSingleton.getGame();
 
         double pos = table.getWidth() / 6;
+
+//        double setX = pos * game.getCardsOnTable().size();
+//        double setY = 0;
+//
+//        setTranslationOfCard(imageView, imageView.getX() - setX, imageView.getY() - setY);
         imageView.setX(pos * game.getCardsOnTable().size());
         imageView.setLayoutY(0);
 
@@ -229,8 +300,6 @@ public class GameHandlerService {
 
         List<PlayerEntity> playerEntities = new ArrayList<>();
 
-        // TODO: вывод в javafx
-
         List<String> playersList = new ArrayList<>(List.of(split));
 
         AnchorPane pane = FxmlObjectsGetter.getAnchorPaneById(FxmlObjectProperties.playersListPaneId);
@@ -238,7 +307,11 @@ public class GameHandlerService {
         double width = pane.getWidth();
         double personalWidth = width / (playersList.size());
         int cnt = 1;
-        for (String name : playersList) {
+
+        int index = playersList.indexOf(ClientSingleton.getClient().getName());
+        for (int i = index; i < index + playersList.size(); i++) {
+            int n = i % playersList.size();
+            String name = playersList.get(n);
             PlayerEntity player = new PlayerEntity(name);
             player.setCardsCount(6);
             player.setImageName("avatar_01.png");
@@ -248,12 +321,27 @@ public class GameHandlerService {
                 personalPane.setLayoutY(6);
                 personalPane.setLayoutX(cnt * personalWidth - FxmlObjectProperties.anchorPaneForUserWidth / 2);
                 pane.getChildren().add(personalPane);
+                player.setPane(personalPane);
                 cnt++;
             }
-
             playerEntities.add(player);
+
+            if (name.equals(split[0])) {
+                game.setCurrentPlayer(playerEntities.indexOf(player));
+            }
         }
         game.setPlayers(playerEntities);
+
+        PlayerEntity defender = game.getDefender();
+        defender.addBorder();
+
+        StringJoiner joiner = new StringJoiner(", ");
+
+        for (PlayerEntity playerEntity : playerEntities) {
+            joiner.add(playerEntity.getName());
+        }
+        System.out.println("Players order set: " + joiner);
+        System.out.println("Current player: " + split[0]);
     }
 
     public static void handleBeatCard(String[] split) {
@@ -284,30 +372,41 @@ public class GameHandlerService {
 
 
         if (game.canAddCardOnTable()) {
-            AnchorPane buttonPane = FxmlObjectsGetter.getAnchorPaneById(FxmlObjectProperties.buttonPositionId);
-            Button button = new Button("BEAT");
-            button.setOnAction(actionEvent -> {
-                Button btn = (Button) actionEvent.getSource();
-                AnchorPane parent = (AnchorPane) btn.getParent();
-                parent.getChildren().remove(btn);
-
-                game.next();
-                Client client = ClientSingleton.getClient();
-                client.write(
-                        ClientGameRequestGenerator.endMove()
-                );
-            });
-            buttonPane.getChildren().add(button);
+            addBeatButton();
         }
     }
 
-    public static void handleAddNewCards(String[] split) {
+    private static void addBeatButton() {
+        AnchorPane buttonPane = FxmlObjectsGetter.getAnchorPaneById(FxmlObjectProperties.buttonPositionId);
+        buttonPane.getChildren().clear();
+        Button button = new Button("BEAT");
+        button.setOnAction(actionEvent -> {
+            Button btn = (Button) actionEvent.getSource();
+            AnchorPane parent = (AnchorPane) btn.getParent();
+            parent.getChildren().clear();
+
+            Client client = ClientSingleton.getClient();
+            client.write(
+                    ClientGameRequestGenerator.endMove()
+            );
+        });
+        buttonPane.getChildren().add(button);
+    }
+
+    public static void handleAddNewCardsOnHands(String[] split) {
         ClientGame game = ClientGameSingleton.getGame();
         for (int i = 1; i < split.length; i++) {
             Card card = Card.getCard(split[i]);
             ImageView imageView = FxmlObjectsGetter.createImageViewForCard(card);
             game.addCardOnHand(card, imageView);
         }
+
+        if (game.getCardsOnHands().size() == 0) {
+            ClientSingleton.getClient().write(
+                    ClientGameRequestGenerator.noMoreCardsOnHands()
+            );
+        }
+
         updateCardsOnHands();
     }
 
@@ -317,9 +416,14 @@ public class GameHandlerService {
         ClientGame game = ClientGameSingleton.getGame();
         game.getCardsOnTable().clear();
         game.setCanMove(false);
+        game.removePlayerBorders();
+        game.next();
 
         Label informationLabel = FxmlObjectsGetter.getLabelById(FxmlObjectProperties.informationLabelId);
         informationLabel.setText(null);
+
+        removeButtonsFromPositionPane();
+        updateCardsOnHands();
     }
 
     public static void handleNewCardToUser(String[] split) {
@@ -330,6 +434,69 @@ public class GameHandlerService {
         } catch (PlayerNotFoundException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public static void handleTakeCards() {
+        ClientGame game = ClientGameSingleton.getGame();
+        PlayerEntity player = game.getDefender();
+
+        int count = game.getCardsOnTableCount();
+        player.addCardsCount(count);
+
+        handleEndMove();
+        game.next();
+    }
+
+    private static void clearCardsOnTable() {
+        AnchorPane pane = FxmlObjectsGetter.getAnchorPaneById(FxmlObjectProperties.tableCardsPaneId);
+        pane.getChildren().clear();
+    }
+
+    public static void handlePlayerWonTheGame(String[] split) {
+        ClientGame game = ClientGameSingleton.getGame();
+        try {
+            PlayerEntity player = game.getPlayerByName(split[1]);
+
+            // TODO: анимация выигрыша
+
+            // temporary notifications
+            if (player.getName().equals(ClientSingleton.getClient().getName())) {
+                Label label = FxmlObjectsGetter.getLabelById(FxmlObjectProperties.alertLabelId);
+                label.setText("CONGRATULATIONS!!!! YOU WON THE GAME!!!");
+            } else {
+                setAlert("CONGRATULATIONS!!!! %S WON THE GAME!!!".formatted(player.getName()));
+            }
+
+            game.removePlayer(player);
+        } catch (PlayerNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static void handleQuitGame(String[] split) {
+        String name = split[1];
+        setAlert("%S left the game".formatted(name));
+        ClientGame game = ClientGameSingleton.getGame();
+
+        try {
+            PlayerEntity player = game.getPlayerByName(name);
+            game.removePlayer(player);
+
+            // TODO: добавить большой крест над игроком, в знак того, что он покинул игру
+        } catch (PlayerNotFoundException e) {
+            return;
+        }
+    }
+
+    public static void handleFool(String[] split) {
+        String name = split[1];
+        Label label = FxmlObjectsGetter.getLabelById(FxmlObjectProperties.alertLabelId);
+        setLabel(label, new EndOfMoveTask(), "%s is FOOOOOOOOL!!!".formatted(name));
+    }
+
+    public static void handleDraw() {
+        Label label = FxmlObjectsGetter.getLabelById(FxmlObjectProperties.alertLabelId);
+        setLabel(label, new EndOfMoveTask(), "DRAW!");
     }
 
 //    public static void updateTableCards() {

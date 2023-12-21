@@ -27,7 +27,7 @@ public class Server {
                 Connection connection = new Connection(socket);
                 connections.add(connection);
 
-                ServerMainListener serverMainListener = new ServerMainListener(connection, this);
+                ServerMainListener serverMainListener = new ServerMainListener(connection);
                 connection.setListener(serverMainListener);
             }
 
@@ -118,5 +118,9 @@ public class Server {
             }
         }
         throw new NoRoomFoundException(connection.getName());
+    }
+
+    public void deleteRoom(Room room) {
+        rooms.remove(room);
     }
 }

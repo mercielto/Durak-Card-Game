@@ -1,5 +1,6 @@
 package com.example.cardgame.server;
 
+import com.example.cardgame.server.exception.PlayerNotFoundException;
 import com.example.cardgame.server.game.DurakGame;
 import com.example.cardgame.server.game.Player;
 import com.example.cardgame.server.listener.ServerGameListener;
@@ -65,6 +66,7 @@ public class Room {
 
     public void startGame() {
         if (game == null) {
+            readyPlayers.clear();
             game = new DurakGame(this);
             for (Connection connection : connections) {
                 connection.setListener(new ServerGameListener(connection, this));
@@ -93,6 +95,18 @@ public class Room {
 
     public void removeConnection(Connection connection) {
         connections.remove(connection);
+        if (game != null) {
+            Player player = null;
+            try {
+                player = game.getPlayer(connection);
+                if (game.getPlayers().contains(player)) {
+                    game.removePlayer(player);
+                }
+            } catch (PlayerNotFoundException e) {
+                return; // he's already left
+            }
+
+        }
     }
 
     public int getPlayersCount() {
@@ -137,22 +151,28 @@ public class Room {
         return game;
     }
 
+    public void deleteGame() {
+        game = null;
+    }
+
     public void sendMessageToConnectionsInGame(String text) {
         if (game != null) {
-            List<Player> players = game.getPlayers();
-            for (Player player : players) {
-                player.getConnection().write(text);
-            }
+            sendMessageToAll(text);
+//            List<Player> players = game.getPlayers();
+//            for (Player player : players) {
+//                player.getConnection().write(text);
+//            }
         }
     }
 
     public void sendMessageToConnectionsInGame(String text, List<Player> except) {
         if (game != null) {
-            List<Player> players = new ArrayList<>(game.getPlayers());
-            players.removeAll(except);
-            for (Player player : players) {
-                player.getConnection().write(text);
-            }
+//            List<Player> players = new ArrayList<>(game.getPlayers());
+//            players.removeAll(except);
+//            for (Player player : players) {
+//                player.getConnection().write(text);
+//            }
+            sendMessageToAll(text, except.stream().map(Player::getConnection).toList());
         }
     }
 }

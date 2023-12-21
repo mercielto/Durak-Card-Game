@@ -1,6 +1,7 @@
 package com.example.cardgame.client.controller;
 
 import com.example.cardgame.client.Client;
+import com.example.cardgame.client.ClientRoomSingleton;
 import com.example.cardgame.client.ClientSingleton;
 import com.example.cardgame.client.StageSingleton;
 import com.example.cardgame.client.application.CreateRoomApplication;
@@ -38,6 +39,7 @@ public class MainController {
     public void handleMouseClickListView(MouseEvent mouseEvent) throws Exception {
         if (mouseEvent.getClickCount() == 2) {
             RoomResponse response = RoomResponse.parse(listViewRooms.getSelectionModel().getSelectedItem());
+            ClientRoomSingleton.setRoom(response);
             (new JoinRoomApplication(response)).start(StageSingleton.getStage());
         }
     }

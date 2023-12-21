@@ -79,4 +79,11 @@ public class ServerMainListenerResponseGenerator {
         }
         return joiner.toString();
     }
+
+    public static String connectionLeftRoom(String name) {
+        StringJoiner joiner = new StringJoiner(ServerProperties.getMainDelimiter());
+        joiner.add(MenuCommands.CONNECTION_LEFT_ROOM.getValue());
+        joiner.add(name);
+        return joiner.toString();
+    }
 }

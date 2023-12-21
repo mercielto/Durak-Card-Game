@@ -147,8 +147,8 @@ public class ClientGame {
 
     public boolean canBeatCard() {
         Client client = ClientSingleton.getClient();
-        int nextPlayer = (currentPlayer + 1) % players.size();
-        return players.get(nextPlayer).getName().equals(client.getName());
+        PlayerEntity defender = getDefender();
+        return defender.getName().equals(client.getName());
     }
 
     public void setCanMove(boolean canMove) {
@@ -157,6 +157,13 @@ public class ClientGame {
 
     public void next() {
         currentPlayer = (currentPlayer + 1) % players.size();
+        PlayerEntity curPlayer = players.get(currentPlayer);
+
+        removePlayerBorders();
+        PlayerEntity defender = getDefender();
+        defender.addBorder();
+
+        System.out.println("Current player: " + curPlayer.getName());
     }
 
     public void removeCardFromHands(CardEntity card) {
@@ -175,5 +182,63 @@ public class ClientGame {
             }
         }
         throw new PlayerNotFoundException(name);
+    }
+
+    public boolean isThereCardsToBeat() {
+        for (CardPair cardPair : cardsOnTable) {
+            if (cardPair.isFull()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void takeTableCardsOnHands() {
+        for (CardPair cardPair : cardsOnTable) {
+            List<Card> cards = cardPair.getAll();
+
+            for (Card card : cards) {
+                cardsOnHands.add((CardEntity) card);
+            }
+        }
+        cardsOnTable.clear();
+    }
+
+    public PlayerEntity getDefender() {
+        int next = (currentPlayer + 1) % players.size();
+        return players.get(next);
+    }
+
+    public int getCardsOnTableCount() {
+        int count = 0;
+        for (CardPair cardPair : cardsOnTable) {
+            count += cardPair.getAll().size();
+        }
+        return count;
+    }
+
+    public void clearCardsOnTable() {
+        cardsOnTable.clear();
+    }
+
+    public void removePlayer(PlayerEntity player) {
+        int index = players.indexOf(player);
+        players.remove(player);
+        if (currentPlayer >= index) {
+            currentPlayer--;
+            if (currentPlayer < 0) {
+                currentPlayer += players.size();
+            }
+        }
+    }
+
+    public void removePlayerBorders() {
+        for (PlayerEntity player : players) {
+            player.removeBorder();
+        }
+    }
+
+    public PlayerEntity getCurrentPlayer() {
+        return players.get(currentPlayer);
     }
 }

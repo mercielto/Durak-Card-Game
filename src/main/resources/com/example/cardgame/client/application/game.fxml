@@ -14,6 +14,11 @@
                   <children>
                       <AnchorPane prefHeight="492.0" prefWidth="889.0" style="-fx-border-color: black;">
                      <children>
+                        <ImageView fitHeight="65.0" fitWidth="55.0" layoutX="25.0" layoutY="16.0" onMouseClicked="#backImageActionHandler" opacity="0.47" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@images/back.png" />
+                           </image>
+                        </ImageView>
                         <AnchorPane fx:id="buttonPosition" layoutX="756.0" layoutY="417.0" prefHeight="26.0" prefWidth="91.0" />
                         <AnchorPane fx:id="playersListPane" layoutX="146.0" layoutY="16.0" prefHeight="113.0" prefWidth="593.0" style="-fx-border-color: BLACK;">
                            <padding>

@@ -35,7 +35,7 @@ public class ServerMainService {
         Room room = null;
         try {
             room = server.getRoomByUuid(uuid);
-            if (!room.isFull()) {
+            if (!room.isFull() && !room.contains(connection)) {
                 room.sendMessageToAll(
                         ServerMainListenerResponseGenerator.someoneJoinedRoom(connection.getName())
                 );
@@ -62,13 +62,16 @@ public class ServerMainService {
 
     public static void handleLeaveRoom(Connection connection) {
         Server server = ServerSingleton.getServer();
-        Room room = null;
         try {
-            room = server.getRoomByConnection(connection);
+            Room room = server.getRoomByConnection(connection);
             room.removeConnection(connection);
             room.sendMessageToAll(
                     ServerMainListenerResponseGenerator.getRoomPlayersNames(room.getUuid().toString())
             );
+
+            if (room.getConnections().size() == 0) {
+                server.deleteRoom(room);
+            }
         } catch (NoRoomFoundException e) {
             throw new RuntimeException(e);
         }
@@ -136,5 +139,18 @@ public class ServerMainService {
 
     public static void setName(Connection connection, String name) {
         connection.setName(name);
+    }
+
+    public static void handleConnectionLeftRoom(Connection connection) {
+        Server server = ServerSingleton.getServer();
+        try {
+            Room room = server.getRoomByConnection(connection);
+            room.removeConnection(connection);
+            room.sendMessageToAll(
+                    ServerMainListenerResponseGenerator.connectionLeftRoom(connection.getName())
+            );
+        } catch (NoRoomFoundException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

@@ -10,6 +10,9 @@ import com.example.cardgame.server.Connection;
 import com.example.cardgame.server.responseGenerator.ServerGameListenerResponseGenerator;
 import com.example.cardgame.server.timerTask.PlayerMoveDurationTask;
 
+
+// TODO: убрать все действия с картами игроков, основная цель серевера отныне лишь передача
+// TODO: ДОБАВИТЬ ТАЙМЕР НА ВРЕМЯ ХОДА + АНИМАЦИЯ
 public class DurakGame {
     private Stack<Card> deck = CardDeck.generate();
     private List<CardPair> cardsOnTable = new ArrayList();
@@ -20,7 +23,7 @@ public class DurakGame {
     private Room room;
 
     public static final int maxCardsOnTable = 6;
-    public static final int maxCardCount = 6;
+    public static final int maxCardCount = 2;
     public static final int maxPlayersSize = 6;
     public static final int minPlayersSize = 2;
     public static final int timePerMove = 20000; // in milliseconds
@@ -76,7 +79,8 @@ public class DurakGame {
         room.sendMessageToAll(
                 ServerGameListenerResponseGenerator.setPLayersOrder(this)
         );
-        players.get(currentPlayer).write(
+
+        getCurrentPlayer().write(
             ServerGameListenerResponseGenerator.yourMove()
         );
 
@@ -90,7 +94,14 @@ public class DurakGame {
     }
 
     public void removePlayer(Player player) {
+        int index = players.indexOf(player);
         players.remove(player);
+        if (currentPlayer >= index) {
+            currentPlayer--;
+            if (currentPlayer < 0) {
+                currentPlayer += players.size();
+            }
+        }
     }
 
     public List<Player> getPlayers() {
@@ -180,6 +191,8 @@ public class DurakGame {
             Card card = deck.pop();
             cards.add(card);
             player.addCard(card);
+
+            // TODO: выдача козырной карты + обработка её на клиенте
         }
         return cards;
     }
@@ -187,16 +200,10 @@ public class DurakGame {
     public Map<Player, List<Card>> dealCards() {
         Map<Player, List<Card>> dealtCards = new HashMap<>();
 
-        int previousPosition = currentPlayer - 1;
-        if (previousPosition < 0) {
-            previousPosition += players.size();
-        }
-
         int nextPosition = (currentPlayer + 1) % players.size();
 
-        for (int playerId = currentPlayer; playerId != previousPosition;
-             playerId = (playerId + 1) % players.size()) {
-
+        for (int i = currentPlayer; i != currentPlayer + players.size(); i++) {
+            int playerId = i % players.size();
             if (playerId == nextPosition) {
                 continue;
             }
@@ -217,5 +224,22 @@ public class DurakGame {
 
     public void next() {
         currentPlayer = (currentPlayer + 1) % players.size();
+    }
+
+    public void stepBack() {
+        currentPlayer--;
+        if (currentPlayer < 0) {
+            currentPlayer += players.size();
+        }
+    }
+
+    public int howManyPlayersLeft() {
+        int count = 0;
+        for (Player player : players) {
+            if (player.getCardsCount() != 0) {
+                count++;
+            }
+        }
+        return count;
     }
 }

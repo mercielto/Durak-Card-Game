@@ -48,7 +48,7 @@ public class ServerGameListenerResponseGenerator {
 
     public static String addNewCards(List<Card> cards) {
         StringJoiner joiner = new StringJoiner(ServerProperties.getMainDelimiter());
-        joiner.add(GameCommands.ADD_NEW_CARDS.getValue());
+        joiner.add(GameCommands.ADD_NEW_CARDS_ON_HANDS.getValue());
 
         for (Card card : cards) {
             joiner.add(card.toString());
@@ -66,5 +66,36 @@ public class ServerGameListenerResponseGenerator {
         joiner.add(name);
         joiner.add(String.valueOf(size));
         return joiner.toString();
+    }
+
+    public static String playerTookCards() {
+        StringJoiner joiner = new StringJoiner(ServerProperties.getMainDelimiter());
+        joiner.add(GameCommands.TAKE_CARDS.getValue());
+        return joiner.toString();
+    }
+
+    public static String playerWonTheGame(Player player) {
+        StringJoiner joiner = new StringJoiner(ServerProperties.getMainDelimiter());
+        joiner.add(GameCommands.PLAYER_WON_THE_GAME.getValue());
+        joiner.add(player.getConnection().getName());
+        return joiner.toString();
+    }
+
+    public static String playerQuitGame(Player player) {
+        StringJoiner joiner = new StringJoiner(ServerProperties.getMainDelimiter());
+        joiner.add(GameCommands.QUIT_GAME_NOTIFICATION.getValue());
+        joiner.add(player.getConnection().getName());
+        return joiner.toString();
+    }
+
+    public static String fool(String name) {
+        StringJoiner joiner = new StringJoiner(ServerProperties.getMainDelimiter());
+        joiner.add(GameCommands.FOOL.getValue());
+        joiner.add(name);
+        return joiner.toString();
+    }
+
+    public static String draw() {
+        return GameCommands.DRAW.getValue();
     }
 }

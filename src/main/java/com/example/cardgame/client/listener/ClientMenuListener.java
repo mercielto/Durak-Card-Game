@@ -14,6 +14,7 @@ public class ClientMenuListener extends Thread {
     @Override
     public void run() {
         BufferedReader reader = ClientSingleton.getClient().getReader();
+        System.out.println("MenuListener: starting...");
         while (!isInterrupted()) {
             try {
                 if (reader.ready() && !isInterrupted()) {
@@ -25,13 +26,14 @@ public class ClientMenuListener extends Thread {
 
                         Platform.runLater(() -> {
                             switch (command) {
-                                case SOMEONE_JOINED_ROOM -> MenuHandlerService.updateListView(split[1]);
+                                case SOMEONE_JOINED_ROOM -> MenuHandlerService.addPlayerToListView(split[1]);
                                 case GET_AVAILABLE_ROOMS -> MenuHandlerService.getAvailableRooms(message);
                                 case CREATE_ROOM -> MenuHandlerService.createRoom(split[1]);
                                 case GET_PLAYERS_LIST_VIEW -> MenuHandlerService.getPlayersListView(split);
                                 case WAITING_FOR_CONFIRMATION -> MenuHandlerService.waitingForConfirmation();
                                 case LEAVE_ROOM -> MenuHandlerService.leaveRoom();
                                 case START_GAME -> MenuHandlerService.startGame(List.of(split));
+                                case CONNECTION_LEFT_ROOM -> MenuHandlerService.handleConnectionLeftRoom(split);
                                 case ERROR -> System.out.println("Что-то какая-то ошибка...");
                             }
                         });
@@ -41,5 +43,6 @@ public class ClientMenuListener extends Thread {
                 throw new RuntimeException(e);
             }
         }
+        System.out.println("MenuListener: stopping...");
     }
 }

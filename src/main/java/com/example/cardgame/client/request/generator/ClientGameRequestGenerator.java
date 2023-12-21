@@ -25,4 +25,20 @@ public class ClientGameRequestGenerator {
     public static String endMove() {
         return GameCommands.END_MOVE.getValue();
     }
+
+    public static String takeCards() {
+        return GameCommands.TAKE_CARDS.getValue();
+    }
+
+    public static String noMoreCardsOnHands() {
+        return GameCommands.NO_MORE_CARDS_ON_HANDS.getValue();
+    }
+
+    public static String forcedEndOfMove() {
+        return GameCommands.FORCED_END_OF_MOVE.getValue();
+    }
+
+    public static String quitGame() {
+        return GameCommands.QUIT_GAME.getValue();
+    }
 }

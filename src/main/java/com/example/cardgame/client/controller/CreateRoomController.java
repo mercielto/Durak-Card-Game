@@ -1,10 +1,13 @@
 package com.example.cardgame.client.controller;
 
 import com.example.cardgame.client.Client;
+import com.example.cardgame.client.ClientRoomSingleton;
 import com.example.cardgame.client.ClientSingleton;
 import com.example.cardgame.client.StageSingleton;
+import com.example.cardgame.client.application.JoinRoomApplication;
 import com.example.cardgame.client.application.MainApplication;
 import com.example.cardgame.client.request.generator.ClientMenuRequestGenerator;
+import com.example.cardgame.client.response.model.RoomResponse;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
@@ -35,6 +38,7 @@ public class CreateRoomController {
         if (createBtn.isDisable()) {
             client.write(ClientMenuRequestGenerator.leaveRoom());
         }
+        ClientRoomSingleton.setRoom(null);
         (new MainApplication()).start(StageSingleton.getStage());
     }
 

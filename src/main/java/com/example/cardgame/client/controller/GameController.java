@@ -1,9 +1,14 @@
 package com.example.cardgame.client.controller;
 
-import com.example.cardgame.client.ClientGameSingleton;
+import com.example.cardgame.client.*;
+import com.example.cardgame.client.application.JoinRoomApplication;
+import com.example.cardgame.client.application.MainApplication;
 import com.example.cardgame.client.game.CardEntity;
 import com.example.cardgame.client.game.ClientGame;
+import com.example.cardgame.client.listener.ClientMenuListener;
+import com.example.cardgame.client.request.generator.ClientGameRequestGenerator;
 import com.example.cardgame.client.service.GameHandlerService;
+import com.example.cardgame.client.timerTask.AlertRemovingTask;
 import com.example.cardgame.gameProperties.cards.Card;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -12,11 +17,11 @@ import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.example.cardgame.client.service.GameHandlerService.canAddCardOnTable;
-import static com.example.cardgame.client.service.GameHandlerService.setAlert;
+import static com.example.cardgame.client.service.GameHandlerService.*;
 
 public class GameController {
     @FXML
@@ -38,7 +43,7 @@ public class GameController {
         CardEntity selectedCard = game.getSelectedCard();
 
         if (!game.canBeAddedToTable(selectedCard)) {
-            setAlert(alertLabel, "YOU CAN NOT MOVE THIS CARD");
+            setAlert("YOU CAN NOT MOVE THIS CARD");
             return;
         }
 
@@ -50,6 +55,7 @@ public class GameController {
         game.removeSelectedCard();
         game.removeCardFromHands(selectedCard);
         GameHandlerService.newCardOnTable(selectedCard);
+        GameHandlerService.removeButtonsFromPositionPane();
 
 //        double pos = tableCardsPane.getWidth() / 6;
 //        imageView.setX(pos * tableCardsPane.getChildren().size());
@@ -84,5 +90,19 @@ public class GameController {
             }
         }
         return null;
+    }
+
+    @FXML
+    public void backImageActionHandler() throws Exception {
+        Client client = ClientSingleton.getClient();
+        client.write(
+                ClientGameRequestGenerator.quitGame()
+        );
+
+        ClientGameSingleton.clear();
+
+        client.setInputListener(new ClientMenuListener());
+
+        (new JoinRoomApplication(ClientRoomSingleton.getRoom())).start(StageSingleton.getStage());
     }
 }

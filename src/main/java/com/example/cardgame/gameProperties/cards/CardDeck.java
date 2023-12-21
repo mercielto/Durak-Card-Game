@@ -29,7 +29,7 @@ public class CardDeck {
 
         // temporary // test
 
-        cards = cards.subList(0, 16);
+        cards = cards.subList(0, 7);
 
         for (Card card : cards) {
             deck.push(card);

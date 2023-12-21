@@ -10,12 +10,13 @@ public enum MenuCommands {
     CREATE_ROOM("3"),
     START_GAME("4"),
     GET_AVAILABLE_ROOMS("5"),
-    ERROR("0"),
+    ERROR("ERROR"),
     SOMEONE_JOINED_ROOM("6"),
     GET_PLAYERS_LIST_VIEW("7"),
     WAITING_FOR_CONFIRMATION("8"),
     READY("9"),
-    SET_NAME("10");
+    SET_NAME("10"),
+    CONNECTION_LEFT_ROOM("11");
 
     private String value;
     MenuCommands(String v) {

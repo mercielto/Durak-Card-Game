@@ -19,7 +19,7 @@ public class GameApplication extends Application {
 
         FXMLLoader fxmlLoader = new FXMLLoader(GameApplication.class.getResource("game.fxml"));
         Scene scene = new Scene(fxmlLoader.load());
-        stage.setTitle("Durak game");
+        stage.setTitle("Durak game (%s)".formatted(ClientSingleton.getClient().getName()));
         stage.setScene(scene);
         stage.show();
     }

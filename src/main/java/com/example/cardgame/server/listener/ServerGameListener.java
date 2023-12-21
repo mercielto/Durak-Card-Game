@@ -46,8 +46,16 @@ public class ServerGameListener extends Thread {
                                     ServerGameService.handleNewCardOnTable(splitMessage, player, room);
                             case BEAT_CARD -> ServerGameService.handleBeatCard(game, player, splitMessage);
                             case END_MOVE -> ServerGameService.handleEndMove(game, player);
+                            case TAKE_CARDS -> ServerGameService.handleTakeCards(game, player);
+                            case NO_MORE_CARDS_ON_HANDS -> ServerGameService.handleNoMoreCardsOnHands(game, player);
+                            case FORCED_END_OF_MOVE -> ServerGameService.handleForcedEndOfMove(game);
+                            case QUIT_GAME -> ServerGameService.handleQuit(game, player);
+                            default -> System.out.println("GameListener: Unknown command --- %s".formatted(command));
                         }
                     }
+                } else {
+                    System.out.println("GameListener: stopping");
+                    break;
                 }
 
             } catch (IOException e) {

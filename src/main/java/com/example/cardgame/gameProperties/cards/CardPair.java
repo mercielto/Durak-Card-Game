@@ -2,6 +2,8 @@ package com.example.cardgame.gameProperties.cards;
 
 import com.example.cardgame.gameProperties.params.Suit;
 
+import java.util.List;
+
 public class CardPair {
     private Card first;
     private Card second;
@@ -31,5 +33,16 @@ public class CardPair {
 
     public Card getSecond() {
         return second;
+    }
+
+    public boolean isFull() {
+        return first != null && second != null;
+    }
+
+    public List<Card> getAll() {
+        if (second != null) {
+            return List.of(first, second);
+        }
+        return List.of(first);
     }
 }
