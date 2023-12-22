@@ -8,16 +8,22 @@ import com.example.cardgame.client.request.generator.ClientGameRequestGenerator;
 import com.example.cardgame.client.timerTask.AlertRemovingTask;
 import com.example.cardgame.client.timerTask.EndOfMoveTask;
 import com.example.cardgame.gameProperties.cards.Card;
+import com.example.cardgame.gameProperties.cards.CardPair;
 import com.example.cardgame.properties.ServerProperties;
 import com.example.cardgame.server.exception.PlayerNotFoundException;
 import javafx.animation.TranslateTransition;
 import javafx.collections.ObservableList;
+import javafx.event.EventHandler;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.paint.Paint;
+import javafx.scene.shape.Line;
 import javafx.util.Duration;
 
 import java.io.FileInputStream;
@@ -33,7 +39,7 @@ public class GameHandlerService {
     }
 
     public static void setCardsOnGameStart(Card trumpCard, List<Card> cards) {
-        ImageView trumpCardPlace = FxmlObjectsGetter.getImageViewById(FxmlObjectProperties.trumpCardId);
+        ImageView trumpCardPlace = FxmlObjectsGetter.getImageViewById(FxmlObjectProperties.TRUMP_CARD);
         try {
             trumpCardPlace.setImage(
                     new Image(
@@ -49,32 +55,6 @@ public class GameHandlerService {
         game.setTrumpCard(trumpCard, trumpCardPlace);
 
         resetCardsOnHands(cards);
-
-//        AnchorPane pane = FxmlObjectsGetter.getAnchorPaneById(FxmlObjectProperties.handCardsAnchorPaneId);
-//        double size = pane.getWidth();
-//        double spacing = size / cards.size();
-//        for (int i = 0; i < cards.size(); i++) {
-//            Card card = cards.get(i);
-//            ImageView imageView = FxmlObjectsGetter.createImageViewForCard(card);
-//            imageView.setX(spacing * i);
-//
-//            imageView.setOnMouseClicked(mouseEvent -> {
-//                ImageView img = (ImageView) mouseEvent.getSource();
-//
-//                CardEntity cardEntity = game.getSelectedCard();
-//                if (cardEntity != null) {
-//                    cardEntity.getImg().setLayoutY(0);
-//                }
-//
-//                img.setLayoutY(-30);
-//
-//                game.setSelectedCard(img);
-//            });
-//
-//            game.addCardOnHand(card, imageView);
-//
-//            pane.getChildren().add(imageView);
-//        }
     }
 
     public static void updateCardsOnHands() {
@@ -84,7 +64,7 @@ public class GameHandlerService {
 
     public static void resetCardsOnHands(List<Card> cards) {
         ClientGame game = ClientGameSingleton.getGame();
-        AnchorPane pane = FxmlObjectsGetter.getAnchorPaneById(FxmlObjectProperties.handCardsAnchorPaneId);
+        AnchorPane pane = FxmlObjectsGetter.getAnchorPaneById(FxmlObjectProperties.HAND_CARDS_PANE);
         pane.getChildren().clear();
         game.getCardsOnHands().clear();
         double size = pane.getWidth();
@@ -93,19 +73,9 @@ public class GameHandlerService {
             Card card = cards.get(i);
             ImageView imageView = FxmlObjectsGetter.createImageViewForCard(card);
             imageView.setX(spacing * i);
+            imageView.setY(0);
 
-            imageView.setOnMouseClicked(mouseEvent -> {
-                ImageView img = (ImageView) mouseEvent.getSource();
-
-                CardEntity cardEntity = game.getSelectedCard();
-                if (cardEntity != null) {
-                    cardEntity.getImg().setLayoutY(0);
-                }
-
-                img.setLayoutY(-30);
-
-                game.setSelectedCard(img);
-            });
+            imageView.setOnMouseClicked(getOnCardOnHandsMouseClickedEventHandler(game));
 
             game.addCardOnHand(card, imageView);
 
@@ -117,7 +87,7 @@ public class GameHandlerService {
         ClientGame game = ClientGameSingleton.getGame();
         game.setCanMove(true);
 
-        Label label = FxmlObjectsGetter.getLabelById(FxmlObjectProperties.informationLabelId);
+        Label label = FxmlObjectsGetter.getLabelById(FxmlObjectProperties.INFORMATION_LABEL);
         label.setText("YOUR MOVE");
 
         if (game.getCardsOnTable().size() != 0) {
@@ -125,13 +95,6 @@ public class GameHandlerService {
         }
 
     }
-
-//    public static void cardIsNotSelectedExceptionHandler() {
-//        Label alertLabel = FxmlObjectsGetter.getLabelById(FxmlObjectProperties.alertLabelId);
-//        alertLabel.setText("CARD NOT SELECTED");
-//        Timer timer = new Timer();
-//        timer.schedule(new AlertRemovingTask(alertLabel), 5000);
-//    }
 
     public static void handleNotYourMove() {
     }
@@ -143,7 +106,7 @@ public class GameHandlerService {
     }
 
     public static void setAlert(String text) {
-        Label alertLabel = FxmlObjectsGetter.getLabelById(FxmlObjectProperties.alertLabelId);
+        Label alertLabel = FxmlObjectsGetter.getLabelById(FxmlObjectProperties.ALERT_LABEL);
         setLabel(alertLabel, new AlertRemovingTask(alertLabel), text);
     }
 
@@ -181,12 +144,10 @@ public class GameHandlerService {
         player.reduceCardsCount();
 
         ImageView imageView = FxmlObjectsGetter.createImageViewForCard(card);
-
-//        imageView.setLayoutX(player.getPane().getLayoutX());
-//        imageView.setLayoutY(player.getPane().getLayoutY());
+        AnchorPane table = FxmlObjectsGetter.getAnchorPaneById(FxmlObjectProperties.TABLE_CARDS_PANE);
 
         imageView.setOnMouseClicked(mouseEvent -> {
-            AnchorPane pane = FxmlObjectsGetter.getAnchorPaneById(FxmlObjectProperties.tableCardsPaneId);
+            AnchorPane pane = FxmlObjectsGetter.getAnchorPaneById(FxmlObjectProperties.TABLE_CARDS_PANE);
             
             Client client = ClientSingleton.getClient();
 
@@ -216,60 +177,142 @@ public class GameHandlerService {
                         );
                     }
                 } else {
-                    // TODO: сделать так, чтобы onClick выполнялся только над изображением карты
-                    //  (над anchorpane нужно убрать)
                     System.out.println("Alert: \"THIS CARD CANNOT BEAT THE SELECTED CARD\"");
                     setAlert("THIS CARD CANNOT BEAT THE SELECTED CARD");
                 }
             }
         });
 
-        AnchorPane table = FxmlObjectsGetter.getAnchorPaneById(FxmlObjectProperties.tableCardsPaneId);
         CardEntity newCard = new CardEntity(imageView, card);
-        addNewCardOnTable(newCard, table);
+        addNewCardFromPlayerOnTable(imageView, table, player);
         ClientGameSingleton.getGame().addCardOnTable(newCard);
     }
 
     public static void removeButtonsFromPositionPane() {
-        AnchorPane pane = FxmlObjectsGetter.getAnchorPaneById(FxmlObjectProperties.buttonPositionId);
+        AnchorPane pane = FxmlObjectsGetter.getAnchorPaneById(FxmlObjectProperties.BUTTON_POSITION);
         pane.getChildren().clear();
     }
-    
-    public static void setTranslationOfCard(Node node, double setByX, double setByY) {
+
+    public static void setTranslationOfCard(Node node, double fromX, double fromY, double toX, double toY) {
         TranslateTransition translateTransition = new TranslateTransition();
-        translateTransition.setDuration(Duration.millis(5000));
+        translateTransition.setDuration(Duration.millis(250));
         translateTransition.setNode(node);
-        translateTransition.setByX(setByX);
-        translateTransition.setByY(setByY);
+
+        translateTransition.setFromX(fromX);
+        translateTransition.setFromY(fromY);
+
+        translateTransition.setToX(toX);
+        translateTransition.setToY(toY);
+
         translateTransition.setAutoReverse(false);
         translateTransition.play();
     }
 
     public static void addTakeCardsButton() {
-        AnchorPane pane = FxmlObjectsGetter.getAnchorPaneById(FxmlObjectProperties.buttonPositionId);
+        AnchorPane pane = FxmlObjectsGetter.getAnchorPaneById(FxmlObjectProperties.BUTTON_POSITION);
         ObservableList<Node> children = pane.getChildren();
 
         Button button = new Button("Take cards");
         button.setOnAction(actionEvent -> {
             ClientGame game = ClientGameSingleton.getGame();
-            game.takeTableCardsOnHands();
+            List<CardPair> tableCardsPairs = new ArrayList<>(game.getCardsOnTable());
+            List<CardEntity> cards = new ArrayList<>(game.getCardsOnHands());
+
             game.next();
             game.next();
             children.clear();
             ClientSingleton.getClient().write(
                     ClientGameRequestGenerator.takeCards()
             );
-            updateCardsOnHands();
-            clearCardsOnTable();
+
+            AnchorPane handsCardsPane = FxmlObjectsGetter.getAnchorPaneById(FxmlObjectProperties.HAND_CARDS_PANE);
+            AnchorPane tableCardsPane = FxmlObjectsGetter.getAnchorPaneById(FxmlObjectProperties.TABLE_CARDS_PANE);
+
+            List<Card> tableCards = new ArrayList<>();
+            for (CardPair pair : tableCardsPairs) {
+                tableCards.addAll(pair.getAll());
+            }
+
+            double size = handsCardsPane.getWidth();
+            double spacing = size / (cards.size() + tableCards.size());
+
+            setTranslationToCards(cards, spacing);
+
+            for (int i = 0; i < tableCards.size(); i++) {
+                CardEntity cardEntity = (CardEntity) tableCards.get(i);
+                ImageView cardImage = cardEntity.getImg();
+
+                double fromX = cardImage.getX();
+                double fromY = tableCardsPane.getLayoutY() - handsCardsPane.getLayoutY();
+
+                double toX = spacing * (i + cards.size());
+                double toY = cardImage.getY();
+
+                setTranslationOfCard(cardImage, fromX, fromY, toX, toY);
+
+                handsCardsPane.getChildren().add(cardImage);
+                cardImage.setOnMouseClicked(getOnCardOnHandsMouseClickedEventHandler(game));
+
+                cardImage.setX(0);
+                cardImage.setY(0);
+                cardImage.setLayoutY(0);
+            }
+
+            game.takeTableCardsOnHands();
         });
 
         children.clear();
         children.add(button);
     }
 
+    public static void setTranslationToCards(List<CardEntity> cards, double spacing) {
+        AnchorPane handsPane = FxmlObjectsGetter.getAnchorPaneById(FxmlObjectProperties.HAND_CARDS_PANE);
+        double previousSpacing = handsPane.getWidth() / cards.size();
+        for (int i = 0; i < cards.size(); i++) {
+            CardEntity card = cards.get(i);
+            ImageView cardImage = card.getImg();
+
+            double fromX = previousSpacing * i;
+            double fromY = 0;
+
+            double toX = spacing * i;
+            double toY = cardImage.getY();
+
+            setTranslationOfCard(cardImage, fromX, fromY, toX, toY);
+
+            cardImage.setX(0);
+            cardImage.setY(0);
+        }
+    }
+
+    private static EventHandler<? super MouseEvent> getOnCardOnHandsMouseClickedEventHandler(ClientGame game) {
+        return mouseEvent ->  {
+            ImageView img = (ImageView) mouseEvent.getSource();
+
+            CardEntity cd = game.getSelectedCard();
+            if (cd != null) {
+                cd.getImg().setLayoutY(0);
+            }
+
+            img.setLayoutY(-30);
+
+            game.setSelectedCard(img);
+        };
+    }
+
     public static void setBeatCardPosition(ImageView img, AnchorPane pane, CardEntity cardToBeat) {
-        img.setX(cardToBeat.getImg().getX());
-        img.setY(cardToBeat.getImg().getY());
+        AnchorPane handsPane = FxmlObjectsGetter.getAnchorPaneById(FxmlObjectProperties.HAND_CARDS_PANE);
+
+        double fromX = img.getX() - img.getLayoutX();
+        double fromY = handsPane.getLayoutY() - pane.getLayoutY() + img.getLayoutY();
+
+        double toX = cardToBeat.getImg().getX() * 2;
+        double toY = cardToBeat.getImg().getY();
+
+        setTranslationOfCard(img, fromX, fromY, toX, toY);
+
+        img.setX(0);
+        img.setY(0);
         img.setLayoutY(10);
         img.setLayoutX(10);
         img.setOnMouseClicked(null);
@@ -278,20 +321,49 @@ public class GameHandlerService {
         cardToBeat.getImg().setOnMouseClicked(null);
     }
 
-    public static void addNewCardOnTable(CardEntity cardEntity, AnchorPane table) {
-        ImageView imageView = cardEntity.getImg();
+    public static void addNewCardFromPlayerOnTable(ImageView imageView, AnchorPane table, PlayerEntity player) {
+        ClientGame game = ClientGameSingleton.getGame();
+
+        double pos = table.getWidth() / 12;
+
+        AnchorPane playerPane = player.getPane();
+        table.getChildren().add(imageView);
+
+        double paneX = playerPane.getParent().getLayoutX() + playerPane.getLayoutX();
+        double paneY = playerPane.getParent().getLayoutY() + playerPane.getLayoutY();
+
+        double toX = pos * game.getCardsOnTable().size();
+        double toY = 0;
+
+        double fromX = paneX - table.getLayoutX() - toX;
+        double fromY = paneY - table.getLayoutY();
+
+        imageView.setX(toX);
+        imageView.setY(toY);
+        imageView.setLayoutY(0);
+
+        setTranslationOfCard(imageView, fromX, fromY, toX, toY);
+    }
+
+    public static void addNewCardOnTable(ImageView imageView, AnchorPane table) {
         ClientGame game = ClientGameSingleton.getGame();
 
         double pos = table.getWidth() / 6;
 
-//        double setX = pos * game.getCardsOnTable().size();
-//        double setY = 0;
-//
-//        setTranslationOfCard(imageView, imageView.getX() - setX, imageView.getY() - setY);
-        imageView.setX(pos * game.getCardsOnTable().size());
-        imageView.setLayoutY(0);
+        AnchorPane handsPane = FxmlObjectsGetter.getAnchorPaneById(FxmlObjectProperties.HAND_CARDS_PANE);
+
+        double fromX = imageView.getX();
+        double fromY = handsPane.getLayoutY() - table.getLayoutY() - imageView.getLayoutY();
+
+        double toX = pos * game.getCardsOnTable().size();
+        double toY = 0;
 
         table.getChildren().add(imageView);
+
+        setTranslationOfCard(imageView, fromX, fromY, toX, toY);
+
+        imageView.setX(0);
+        imageView.setY(0);
     }
 
     public static void setPlayersOrder(String players) {
@@ -302,7 +374,7 @@ public class GameHandlerService {
 
         List<String> playersList = new ArrayList<>(List.of(split));
 
-        AnchorPane pane = FxmlObjectsGetter.getAnchorPaneById(FxmlObjectProperties.playersListPaneId);
+        AnchorPane pane = FxmlObjectsGetter.getAnchorPaneById(FxmlObjectProperties.PLAYERS_LIST_PANE);
 
         double width = pane.getWidth();
         double personalWidth = width / (playersList.size());
@@ -319,7 +391,7 @@ public class GameHandlerService {
             if (!name.equals(ClientSingleton.getClient().getName())) {
                 AnchorPane personalPane = FxmlObjectsGetter.createAnchorPaneForUser(player);
                 personalPane.setLayoutY(6);
-                personalPane.setLayoutX(cnt * personalWidth - FxmlObjectProperties.anchorPaneForUserWidth / 2);
+                personalPane.setLayoutX(cnt * personalWidth - FxmlObjectProperties.ANCHOR_PANE_FOR_USER_WIDTH / 2);
                 pane.getChildren().add(personalPane);
                 player.setPane(personalPane);
                 cnt++;
@@ -365,19 +437,41 @@ public class GameHandlerService {
 
         game.beatCardOnTable(cardToBeatEntity, cardEntity);
 
-        // TODO: СДЕЛАТЬ ТАК, ЧТОБЫ КАРТЫ ВЫХОДИЛИ ОТ ИГРОКА ПО ИМЕНИ NAME
-
-        AnchorPane pane = FxmlObjectsGetter.getAnchorPaneById(FxmlObjectProperties.tableCardsPaneId);
-        setBeatCardPosition(cardImage, pane, cardToBeatEntity);
-
+        AnchorPane pane = FxmlObjectsGetter.getAnchorPaneById(FxmlObjectProperties.TABLE_CARDS_PANE);
+        setBeatCardFromPlayerPosition(cardImage, pane, cardToBeatEntity, player);
 
         if (game.canAddCardOnTable()) {
             addBeatButton();
         }
     }
 
+    private static void setBeatCardFromPlayerPosition(ImageView img, AnchorPane pane,
+                                                      CardEntity cardToBeat, PlayerEntity player) {
+        AnchorPane playerPane = player.getPane();
+
+        double paneX = playerPane.getParent().getLayoutX() + playerPane.getLayoutX();
+        double paneY = playerPane.getParent().getLayoutY() + playerPane.getLayoutY();
+
+        double fromX = paneX - pane.getLayoutX();
+        double fromY = paneY - pane.getLayoutY();
+
+        double toX = cardToBeat.getImg().getX();
+        double toY = cardToBeat.getImg().getY();
+
+        setTranslationOfCard(img, fromX, fromY, toX, toY);
+
+        img.setX(cardToBeat.getImg().getX());
+        img.setY(cardToBeat.getImg().getY());
+        img.setLayoutY(10);
+        img.setLayoutX(10);
+        img.setOnMouseClicked(null);
+
+        pane.getChildren().add(img);
+        cardToBeat.getImg().setOnMouseClicked(null);
+    }
+
     private static void addBeatButton() {
-        AnchorPane buttonPane = FxmlObjectsGetter.getAnchorPaneById(FxmlObjectProperties.buttonPositionId);
+        AnchorPane buttonPane = FxmlObjectsGetter.getAnchorPaneById(FxmlObjectProperties.BUTTON_POSITION);
         buttonPane.getChildren().clear();
         Button button = new Button("BEAT");
         button.setOnAction(actionEvent -> {
@@ -395,9 +489,35 @@ public class GameHandlerService {
 
     public static void handleAddNewCardsOnHands(String[] split) {
         ClientGame game = ClientGameSingleton.getGame();
+
+        AnchorPane handsCardsPane = FxmlObjectsGetter.getAnchorPaneById(FxmlObjectProperties.HAND_CARDS_PANE);
+
+        double size = handsCardsPane.getWidth();
+        double spacing = size / (split.length + game.getCardsOnHands().size());
+
+        setTranslationToCards(game.getCardsOnHands(), spacing);
         for (int i = 1; i < split.length; i++) {
             Card card = Card.getCard(split[i]);
             ImageView imageView = FxmlObjectsGetter.createImageViewForCard(card);
+
+            CardEntity cardEntity = new CardEntity(imageView, card);
+            ImageView cardImage = cardEntity.getImg();
+
+            double fromX = FxmlObjectProperties.DECK_X - handsCardsPane.getLayoutX();
+            double fromY = FxmlObjectProperties.DECK_Y - handsCardsPane.getLayoutY();
+
+            double toX = spacing * (i + game.getCardsOnHands().size() - 1);
+            double toY = 0;
+
+            setTranslationOfCard(cardImage, fromX, fromY, toX, toY);
+
+            handsCardsPane.getChildren().add(cardImage);
+            cardImage.setOnMouseClicked(getOnCardOnHandsMouseClickedEventHandler(game));
+
+            cardImage.setX(0);
+            cardImage.setY(0);
+            cardImage.setLayoutY(0);
+
             game.addCardOnHand(card, imageView);
         }
 
@@ -406,12 +526,10 @@ public class GameHandlerService {
                     ClientGameRequestGenerator.noMoreCardsOnHands()
             );
         }
-
-        updateCardsOnHands();
     }
 
     public static void handleEndMove() {
-        AnchorPane table = FxmlObjectsGetter.getAnchorPaneById(FxmlObjectProperties.tableCardsPaneId);
+        AnchorPane table = FxmlObjectsGetter.getAnchorPaneById(FxmlObjectProperties.TABLE_CARDS_PANE);
         table.getChildren().clear();
         ClientGame game = ClientGameSingleton.getGame();
         game.getCardsOnTable().clear();
@@ -419,7 +537,7 @@ public class GameHandlerService {
         game.removePlayerBorders();
         game.next();
 
-        Label informationLabel = FxmlObjectsGetter.getLabelById(FxmlObjectProperties.informationLabelId);
+        Label informationLabel = FxmlObjectsGetter.getLabelById(FxmlObjectProperties.INFORMATION_LABEL);
         informationLabel.setText(null);
 
         removeButtonsFromPositionPane();
@@ -447,21 +565,13 @@ public class GameHandlerService {
         game.next();
     }
 
-    private static void clearCardsOnTable() {
-        AnchorPane pane = FxmlObjectsGetter.getAnchorPaneById(FxmlObjectProperties.tableCardsPaneId);
-        pane.getChildren().clear();
-    }
-
     public static void handlePlayerWonTheGame(String[] split) {
         ClientGame game = ClientGameSingleton.getGame();
         try {
             PlayerEntity player = game.getPlayerByName(split[1]);
 
-            // TODO: анимация выигрыша
-
-            // temporary notifications
             if (player.getName().equals(ClientSingleton.getClient().getName())) {
-                Label label = FxmlObjectsGetter.getLabelById(FxmlObjectProperties.alertLabelId);
+                Label label = FxmlObjectsGetter.getLabelById(FxmlObjectProperties.ALERT_LABEL);
                 label.setText("CONGRATULATIONS!!!! YOU WON THE GAME!!!");
             } else {
                 setAlert("CONGRATULATIONS!!!! %S WON THE GAME!!!".formatted(player.getName()));
@@ -482,33 +592,55 @@ public class GameHandlerService {
             PlayerEntity player = game.getPlayerByName(name);
             game.removePlayer(player);
 
-            // TODO: добавить большой крест над игроком, в знак того, что он покинул игру
+            addCrossOnPlayer(player);
+
         } catch (PlayerNotFoundException e) {
+            // remove from game earlier because of the win
             return;
         }
     }
 
+    private static void addCrossOnPlayer(PlayerEntity player) {
+        AnchorPane playerPane = player.getPane();
+        Parent parent = playerPane.getParent();
+
+        double leftUpperPointX = playerPane.getLayoutX() + parent.getLayoutX();
+        double leftUpperPointY = playerPane.getLayoutY() + parent.getLayoutY();
+
+        Line line1 = new Line();
+        line1.setStroke(Paint.valueOf("#ce1515"));
+        line1.setStrokeWidth(4);
+
+        line1.setStartX(leftUpperPointX);
+        line1.setEndX(leftUpperPointX + playerPane.getWidth());
+
+        line1.setStartY(leftUpperPointY);
+        line1.setEndY(leftUpperPointY + playerPane.getHeight());
+
+        Line line2 = new Line();
+        line2.setStroke(Paint.valueOf("#ce1515"));
+        line2.setStrokeWidth(4);
+
+        line2.setStartX(leftUpperPointX + playerPane.getWidth());
+        line2.setEndX(leftUpperPointX);
+
+        line2.setStartY(leftUpperPointY);
+        line2.setEndY(leftUpperPointY + playerPane.getHeight());
+
+        AnchorPane mainPane = FxmlObjectsGetter.getAnchorPaneById(FxmlObjectProperties.MAIN_PANE_ID);
+        mainPane.getChildren().addAll(line1, line2);
+    }
+
     public static void handleFool(String[] split) {
         String name = split[1];
-        Label label = FxmlObjectsGetter.getLabelById(FxmlObjectProperties.alertLabelId);
+        Label label = FxmlObjectsGetter.getLabelById(FxmlObjectProperties.ALERT_LABEL);
         setLabel(label, new EndOfMoveTask(), "%s is FOOOOOOOOL!!!".formatted(name));
+        ClientGameSingleton.clear();
     }
 
     public static void handleDraw() {
-        Label label = FxmlObjectsGetter.getLabelById(FxmlObjectProperties.alertLabelId);
+        Label label = FxmlObjectsGetter.getLabelById(FxmlObjectProperties.ALERT_LABEL);
         setLabel(label, new EndOfMoveTask(), "DRAW!");
+        ClientGameSingleton.clear();
     }
-
-//    public static void updateTableCards() {
-//        ClientGame game = GameSingleton.getGame();
-//        AnchorPane table = FxmlObjectsGetter.getAnchorPaneById(FxmlObjectProperties.tableCardsPaneId);
-//        int count = 0;
-//        for (CardImageView cardImageView : game.getCardsOnTable()) {
-//            ImageView img = cardImageView.getImg();
-//            double pos = table.getWidth() / (table.getChildren().size() + 1);
-//            img.setX(pos * count);
-//            count++;
-//            table.getChildren().add(img);
-//        }
-//    }
 }

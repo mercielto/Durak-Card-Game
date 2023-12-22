@@ -2,6 +2,7 @@ package com.example.cardgame.client.listener;
 
 import com.example.cardgame.client.ClientSingleton;
 import com.example.cardgame.client.service.MenuHandlerService;
+import com.example.cardgame.gameProperties.exception.CommandNotDefinedException;
 import com.example.cardgame.properties.ServerProperties;
 import com.example.cardgame.properties.commands.MenuCommands;
 import javafx.application.Platform;
@@ -39,6 +40,8 @@ public class ClientMenuListener extends Thread {
                         });
                     }
                 }
+            } catch (CommandNotDefinedException e) {
+                System.err.println(e.getMessage());
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }

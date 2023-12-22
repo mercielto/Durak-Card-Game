@@ -16,7 +16,6 @@ public class EndOfMoveTask extends TimerTask {
     public void run() {
 
         // Think should be removed, has unchecked transfers
-
         Platform.runLater(() ->
                 {
                     try {

@@ -40,12 +40,12 @@ public class JoinRoomApplication extends Application {
         TextField idField = (TextField) scene.lookup("#roomId");
         idField.setText(room.getUuid().toString());
 
-//        ListView<String> listView = (ListView<String>) scene.lookup("#listView");
-//        ObservableList<String> observableList = FXCollections.observableArrayList(room.getPlayers());
-//        listView.setItems(observableList);
-
         stage.setTitle("Join room");
         stage.setScene(scene);
+
+        if (room.getPlayers().size() == room.getMaxPlayersCount()) {
+            MenuHandlerService.waitingForConfirmation();
+        }
         stage.show();
     }
 }

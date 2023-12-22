@@ -5,15 +5,12 @@ import com.example.cardgame.client.game.PlayerEntity;
 import com.example.cardgame.gameProperties.cards.Card;
 import com.example.cardgame.client.FxmlObjectProperties;
 import com.example.cardgame.properties.ServerProperties;
-import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
-import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.Border;
 import javafx.scene.paint.Paint;
 import javafx.stage.Stage;
 
@@ -76,16 +73,19 @@ public class FxmlObjectsGetter {
             throw new RuntimeException(e);
         }
 
-        img.setFitHeight(FxmlObjectProperties.cardHeight);
-        img.setFitWidth(FxmlObjectProperties.cardWidth);
+        img.setFitHeight(FxmlObjectProperties.CARD_HEIGHT);
+        img.setFitWidth(FxmlObjectProperties.CARD_WIDTH);
+
+        img.setX(0);
+        img.setY(0);
         return img;
     }
 
     public static AnchorPane createAnchorPaneForUserAvatar() {
         AnchorPane anchorPane = new AnchorPane();
         anchorPane.setPrefSize(
-                FxmlObjectProperties.anchorPaneForUserWidth,
-                FxmlObjectProperties.anchorPaneForUserHeight
+                FxmlObjectProperties.ANCHOR_PANE_FOR_USER_WIDTH,
+                FxmlObjectProperties.ANCHOR_PANE_FOR_USER_HEIGHT
         );
         return anchorPane;
     }
@@ -104,8 +104,8 @@ public class FxmlObjectsGetter {
             throw new RuntimeException(e);
         }
 
-        img.setFitHeight(FxmlObjectProperties.userImageInGameHeight);
-        img.setFitWidth(FxmlObjectProperties.userImageInGameWidth);
+        img.setFitHeight(FxmlObjectProperties.USER_IMAGE_IN_GAME_HEIGHT);
+        img.setFitWidth(FxmlObjectProperties.USER_IMAGE_IN_GAME_WIDTH);
         return img;
     }
 
@@ -118,14 +118,14 @@ public class FxmlObjectsGetter {
         nameLabel.setTextFill(Paint.valueOf("#ffffff"));
         nameLabel.setLayoutY(48);
         nameLabel.setAlignment(Pos.CENTER);
-        nameLabel.setPrefWidth(FxmlObjectProperties.userNameLabelWidth);
-        nameLabel.setPrefHeight(FxmlObjectProperties.userNameLabelHeight);
+        nameLabel.setPrefWidth(FxmlObjectProperties.USER_NAME_LABEL_WIDTH);
+        nameLabel.setPrefHeight(FxmlObjectProperties.USER_NAME_LABEL_HEIGHT);
 //        nameLabel.setBorder(Border.stroke(Paint.valueOf("#000000")));
 
         Label cardsCountLabel = new Label(String.valueOf(player.getCardsCount()));
 
-        cardsCountLabel.setPrefWidth(FxmlObjectProperties.userNameLabelWidth);
-        cardsCountLabel.setPrefHeight(FxmlObjectProperties.userNameLabelHeight);
+        cardsCountLabel.setPrefWidth(FxmlObjectProperties.USER_NAME_LABEL_WIDTH);
+        cardsCountLabel.setPrefHeight(FxmlObjectProperties.USER_NAME_LABEL_HEIGHT);
         cardsCountLabel.setLayoutY(76);
         cardsCountLabel.setAlignment(Pos.CENTER);
         cardsCountLabel.setTextFill(Paint.valueOf("#ffffff"));

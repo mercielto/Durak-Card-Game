@@ -2,13 +2,11 @@ package com.example.cardgame.client.controller;
 
 import com.example.cardgame.client.*;
 import com.example.cardgame.client.application.JoinRoomApplication;
-import com.example.cardgame.client.application.MainApplication;
 import com.example.cardgame.client.game.CardEntity;
 import com.example.cardgame.client.game.ClientGame;
 import com.example.cardgame.client.listener.ClientMenuListener;
 import com.example.cardgame.client.request.generator.ClientGameRequestGenerator;
 import com.example.cardgame.client.service.GameHandlerService;
-import com.example.cardgame.client.timerTask.AlertRemovingTask;
 import com.example.cardgame.gameProperties.cards.Card;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -17,7 +15,6 @@ import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -47,25 +44,16 @@ public class GameController {
             return;
         }
 
-        handCardsPane.getChildren().remove(selectedCard.getImg());
 
-        GameHandlerService.addNewCardOnTable(selectedCard, tableCardsPane);
+        selectedCard.getImg().setLayoutY(0);
+
+        GameHandlerService.addNewCardOnTable(selectedCard.getImg(), tableCardsPane);
+        handCardsPane.getChildren().remove(selectedCard.getImg());
         selectedCard.getImg().setOnMouseClicked(null);
         game.addCardOnTable(selectedCard);
         game.removeSelectedCard();
-        game.removeCardFromHands(selectedCard);
         GameHandlerService.newCardOnTable(selectedCard);
         GameHandlerService.removeButtonsFromPositionPane();
-
-//        double pos = tableCardsPane.getWidth() / 6;
-//        imageView.setX(pos * tableCardsPane.getChildren().size());
-//        imageView.setLayoutY(0);
-//        imageView.setOnMouseClicked(null);
-//
-//
-//        tableCardsPane.getChildren().add(imageView);
-//
-//        game.addCardOnTable(selectedCard);
     }
 
     private List<Card> getCardsOnTable() {

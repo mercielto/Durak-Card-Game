@@ -1,14 +1,11 @@
 package com.example.cardgame.server;
 
-import com.example.cardgame.db.model.Account;
-
 import java.io.*;
 import java.net.Socket;
 import java.util.UUID;
 
 public class Connection {
     private final Socket socket;
-//    private final Account account;
     private String name = "Not set";
 
     private final BufferedReader reader;

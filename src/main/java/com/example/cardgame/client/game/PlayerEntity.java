@@ -33,7 +33,6 @@ public class PlayerEntity {
             System.out.println("BORDER IS ADDED!!!!!1");
             pane.setBorder(new Border(new BorderStroke(Paint.valueOf("#ff0000"),
                     BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
-//            pane.setBorder(Border.stroke(Paint.valueOf("#ff0000")));
         }
     }
 
@@ -48,37 +47,9 @@ public class PlayerEntity {
         cardsCountLabel.setText(String.valueOf(cardsCount));
     }
 
-//    public Label getCardsCountLabel() {
-//        return cardsCountLabel;
-//    }
-
-//    public void setCardsCountLabel(Label cardsCountLabel) {
-//        this.cardsCountLabel = cardsCountLabel;
-//    }
-
-//    public String getName() {
-//        return name;
-//    }
-
-//    public int getCardsCount() {
-//        return cardsCount;
-//    }
-
     public void addCardsCount(int count) {
         cardsCount += count;
     }
-
-//    public void setCardsCount(int cardsCount) {
-//        this.cardsCount = cardsCount;
-//    }
-
-//    public String getImageName() {
-//        return imageName;
-//    }
-
-//    public void setImageName(String imageName) {
-//        this.imageName = imageName;
-//    }
 
     @Override
     public boolean equals(Object obj) {

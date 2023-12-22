@@ -58,5 +58,6 @@ public class CreateRoomController {
         client.write(
                 ClientMenuRequestGenerator.ready()
         );
+        readyBtn.setDisable(true);
     }
 }

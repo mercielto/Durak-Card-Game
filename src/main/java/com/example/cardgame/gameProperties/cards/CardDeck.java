@@ -27,10 +27,6 @@ public class CardDeck {
         Stack<Card> deck = new Stack<>();
         List<Card> cards = generateArray();
 
-        // temporary // test
-
-        cards = cards.subList(0, 7);
-
         for (Card card : cards) {
             deck.push(card);
         }

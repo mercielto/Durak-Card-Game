@@ -113,6 +113,9 @@ public class ServerGameService {
     private static Map<Player, List<Card>> dealCards(DurakGame game) {
         Map<Player, List<Card>> dealtCards = game.dealCards();
         for (Player pl : dealtCards.keySet()) {
+            if (dealtCards.get(pl).size() == 0) {
+                continue;
+            }
             pl.write(
                     ServerGameListenerResponseGenerator.addNewCards(dealtCards.get(pl))
             );
@@ -155,7 +158,6 @@ public class ServerGameService {
         );
 
         game.removePlayer(player);
-//        game.stepBack();
         startNewCycle(game);
     }
 
@@ -168,9 +170,13 @@ public class ServerGameService {
 
     public static void handleQuit(DurakGame game, Player player) {
         Room room = game.getRoom();
+
+        Player currentPLayer = game.getCurrentPlayer();
+
         game.removePlayer(player);
         room.sendMessageToConnectionsInGame(
-                ServerGameListenerResponseGenerator.playerQuitGame(player)
+                ServerGameListenerResponseGenerator.playerQuitGame(player),
+                List.of(player)
         );
         player.getConnection().setListener(
                 new ServerMainListener(player.getConnection()
@@ -182,6 +188,10 @@ public class ServerGameService {
             room.sendMessageToConnectionsInGame(
                     ServerGameListenerResponseGenerator.playerWonTheGame(players.get(0))
             );
+        }
+
+        if (currentPLayer.equals(player)) {
+            startNewCycle(game);
         }
     }
 }

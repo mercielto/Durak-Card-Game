@@ -29,16 +29,16 @@ public class MenuHandlerService {
         }
 
         ObservableList<String> roomsObservableList = FXCollections.observableArrayList(rooms);
-        FxmlObjectsGetter.getListViewById(FxmlObjectProperties.menuListViewId)
+        FxmlObjectsGetter.getListViewById(FxmlObjectProperties.LIST_VIEW_ROOMS)
                 .setItems(roomsObservableList);
     }
 
     public static void createRoom(String id) {
-        ListView<String> listView = FxmlObjectsGetter.getListViewById(FxmlObjectProperties.roomListViewId);
-        TextField roomName = FxmlObjectsGetter.getTextFieldById(FxmlObjectProperties.roomNameId);
-        TextField roomId = FxmlObjectsGetter.getTextFieldById(FxmlObjectProperties.roomIdId);
-        ChoiceBox<String> maxPlayersCount = FxmlObjectsGetter.getChoiceBoxById(FxmlObjectProperties.roomChoiceBoxId);
-        Button createBtn = FxmlObjectsGetter.getButtonById(FxmlObjectProperties.roomCreateBtnId);
+        ListView<String> listView = FxmlObjectsGetter.getListViewById(FxmlObjectProperties.ROOM_LIST_VIEW_ID);
+        TextField roomName = FxmlObjectsGetter.getTextFieldById(FxmlObjectProperties.ROOM_NAME);
+        TextField roomId = FxmlObjectsGetter.getTextFieldById(FxmlObjectProperties.ROOM_ID);
+        ChoiceBox<String> maxPlayersCount = FxmlObjectsGetter.getChoiceBoxById(FxmlObjectProperties.MAX_PLAYERS_COUNT);
+        Button createBtn = FxmlObjectsGetter.getButtonById(FxmlObjectProperties.CREATE_BTN);
 
         String player = MenuHandlerService.getPlayerInfo();
         ObservableList<String> roomsObservableList = FXCollections.observableArrayList(player);
@@ -76,15 +76,10 @@ public class MenuHandlerService {
     public static void addPlayerToListView(String name) {
         ClientRoomSingleton.getRoom().addPlayer(name);
         updateListView();
-//        ListView<String> listView = FxmlObjectsGetter.getListViewById(FxmlObjectProperties.roomListViewId);
-//        List<String> list = listView.getItems();
-//
-//        list.add(name);
-//        listView.setItems(FXCollections.observableList(list));
     }
 
     private static void updateListView() {
-        ListView<String> listView = FxmlObjectsGetter.getListViewById(FxmlObjectProperties.roomListViewId);
+        ListView<String> listView = FxmlObjectsGetter.getListViewById(FxmlObjectProperties.ROOM_LIST_VIEW_ID);
         listView.setItems(FXCollections.observableList(ClientRoomSingleton.getRoom().getPlayers()));
     }
 
@@ -98,14 +93,14 @@ public class MenuHandlerService {
         namesList = namesList.subList(1, namesList.size());
         ObservableList<String> roomsObservableList = FXCollections.observableArrayList(namesList);
 
-        ListView<String> listView = FxmlObjectsGetter.getListViewById(FxmlObjectProperties.roomListViewId);
+        ListView<String> listView = FxmlObjectsGetter.getListViewById(FxmlObjectProperties.ROOM_LIST_VIEW_ID);
         listView.setItems(roomsObservableList);
 
         ClientRoomSingleton.getRoom().setPlayers(namesList);
     }
 
     public static void waitingForConfirmation() {
-        Button button = FxmlObjectsGetter.getButtonById(FxmlObjectProperties.readyBtnId);
+        Button button = FxmlObjectsGetter.getButtonById(FxmlObjectProperties.READY_BTN);
         button.opacityProperty().setValue(1);
         button.setDisable(false);
     }

@@ -35,6 +35,7 @@ public class RoomResponse {
                 .uuid(UUID.fromString(parsed[1].substring(1, parsed[1].length() - 1)))
                 .playersCount(Integer.parseInt(count[0]))
                 .maxPlayersCount(Integer.parseInt(count[1]))
+                .players(new ArrayList<>())
                 .build();
     }
 
