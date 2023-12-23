@@ -16,6 +16,8 @@ public class FxmlObjectProperties {
     public static final String BUTTON_POSITION = "#buttonPosition";
     public static final String PLAYERS_LIST_PANE = "#playersListPane";
     public static final String MAIN_PANE_ID = "#mainPaneId";
+    public static final String SET_NAME_ALERT_LABEL = "#alertLabelId";
+    public static final String SET_NAME_TEXT_FIELD = "#nameInputAreaId";
 
 
     public static final int CARD_WIDTH = 65;

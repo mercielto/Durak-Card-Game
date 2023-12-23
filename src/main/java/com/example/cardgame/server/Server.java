@@ -36,6 +36,10 @@ public class Server {
         }
     }
 
+    public List<Connection> getConnections() {
+        return connections;
+    }
+
     public List<Room> getRooms() {
         return rooms;
     }

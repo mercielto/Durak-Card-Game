@@ -86,4 +86,12 @@ public class ServerMainListenerResponseGenerator {
         joiner.add(name);
         return joiner.toString();
     }
+
+    public static String nameTaken() {
+        return MenuCommands.NAME_TAKEN.getValue();
+    }
+
+    public static String nameApproved() {
+        return MenuCommands.NAME_APPROVED.getValue();
+    }
 }

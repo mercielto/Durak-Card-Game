@@ -36,6 +36,8 @@ public class ClientMenuListener extends Thread {
                                 case START_GAME -> MenuHandlerService.startGame(List.of(split));
                                 case CONNECTION_LEFT_ROOM -> MenuHandlerService.handleConnectionLeftRoom(split);
                                 case ERROR -> System.out.println("Что-то какая-то ошибка...");
+                                case NAME_TAKEN -> MenuHandlerService.handleNameTaken();
+                                case NAME_APPROVED -> MenuHandlerService.handleNameApproved();
                             }
                         });
                     }

@@ -3,20 +3,19 @@ package com.example.cardgame.client.service;
 import com.example.cardgame.client.*;
 import com.example.cardgame.client.application.GameApplication;
 import com.example.cardgame.client.application.MainApplication;
+import com.example.cardgame.client.timerTask.AlertRemovingTask;
 import com.example.cardgame.gameProperties.cards.Card;
 import com.example.cardgame.client.request.generator.ClientMenuRequestGenerator;
 import com.example.cardgame.client.response.model.RoomResponse;
 import com.example.cardgame.client.response.server_parser.MenuResponseParser;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.scene.control.Button;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.ListView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
 import java.util.UUID;
 
 public class MenuHandlerService {
@@ -134,5 +133,26 @@ public class MenuHandlerService {
         room.removePlayer(split[1]);
 
         updateListView();
+    }
+
+    public static void setAlert(Label alertLabel, String text) {
+        Timer timer = new Timer();
+        alertLabel.setText(text);
+        timer.schedule(new AlertRemovingTask(alertLabel), 3000);
+    }
+
+    public static void handleNameTaken() {
+        Label alertLabel = FxmlObjectsGetter.getLabelById(FxmlObjectProperties.SET_NAME_ALERT_LABEL);
+        setAlert(alertLabel, "This name is already taken");
+    }
+
+    public static void handleNameApproved() {
+        TextField label = FxmlObjectsGetter.getTextFieldById(FxmlObjectProperties.SET_NAME_TEXT_FIELD);
+        try {
+            ClientSingleton.getClient().setName(label.getText());
+            (new MainApplication()).start(StageSingleton.getStage());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

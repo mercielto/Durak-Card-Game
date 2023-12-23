@@ -138,7 +138,19 @@ public class ServerMainService {
     }
 
     public static void setName(Connection connection, String name) {
+        Server server = ServerSingleton.getServer();
+        for (Connection conn : server.getConnections()) {
+            if (conn.getName().equals(name)) {
+                connection.write(
+                        ServerMainListenerResponseGenerator.nameTaken()
+                );
+                return;
+            }
+        }
         connection.setName(name);
+        connection.write(
+                ServerMainListenerResponseGenerator.nameApproved()
+        );
     }
 
     public static void handleConnectionLeftRoom(Connection connection) {

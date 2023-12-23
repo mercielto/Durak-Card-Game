@@ -232,4 +232,11 @@ public class DurakGame {
         }
         return count;
     }
+
+    public void takeCardsOnHands(Player player) {
+        for (CardPair cardPair : cardsOnTable) {
+            player.getCards().addAll(cardPair.getAll());
+        }
+        cardsOnTable.clear();
+    }
 }

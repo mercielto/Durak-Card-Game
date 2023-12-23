@@ -16,7 +16,9 @@ public enum MenuCommands {
     WAITING_FOR_CONFIRMATION("8"),
     READY("9"),
     SET_NAME("10"),
-    CONNECTION_LEFT_ROOM("11");
+    CONNECTION_LEFT_ROOM("11"),
+    NAME_TAKEN("12"),
+    NAME_APPROVED("13");
 
     private String value;
     MenuCommands(String v) {

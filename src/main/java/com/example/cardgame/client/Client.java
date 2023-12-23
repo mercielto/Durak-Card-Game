@@ -11,7 +11,7 @@ public class Client {
     private BufferedReader reader;
     private PrintWriter out;
     private Thread inputListener;
-    private String name;
+    private String name = "";
 
     public Client() {
         try {

@@ -133,6 +133,7 @@ public class ServerGameService {
 
     public static void handleTakeCards(DurakGame game, Player player) {
         Room room = game.getRoom();
+        game.takeCardsOnHands(player);
         room.sendMessageToConnectionsInGame(
                 ServerGameListenerResponseGenerator.playerTookCards(),
                 List.of(player)
