@@ -272,16 +272,16 @@ public class GameHandlerService {
             CardEntity card = cards.get(i);
             ImageView cardImage = card.getImg();
 
-            double fromX = previousSpacing * i;
-            double fromY = 0;
-
             double toX = spacing * i;
             double toY = cardImage.getY();
 
-            setTranslationOfCard(cardImage, fromX, fromY, toX, toY);
+            double fromX = previousSpacing * i - toX;
+            double fromY = 0 - toY;
 
-            cardImage.setX(0);
-            cardImage.setY(0);
+            setTranslationOfCard(cardImage, fromX, fromY, 0, 0);
+
+            cardImage.setX(toX);
+            cardImage.setY(toY);
         }
     }
 
@@ -498,27 +498,24 @@ public class GameHandlerService {
         setTranslationToCards(game.getCardsOnHands(), spacing);
         for (int i = 1; i < split.length; i++) {
             Card card = Card.getCard(split[i]);
-            ImageView imageView = FxmlObjectsGetter.createImageViewForCard(card);
+            ImageView cardImage = FxmlObjectsGetter.createImageViewForCard(card);
 
-            CardEntity cardEntity = new CardEntity(imageView, card);
-            ImageView cardImage = cardEntity.getImg();
-
-            double fromX = FxmlObjectProperties.DECK_X - handsCardsPane.getLayoutX();
-            double fromY = FxmlObjectProperties.DECK_Y - handsCardsPane.getLayoutY();
-
-            double toX = spacing * (i + game.getCardsOnHands().size() - 1);
+            double toX = spacing * game.getCardsOnHands().size() + (i - 1) * spacing / 12;
             double toY = 0;
 
-            setTranslationOfCard(cardImage, fromX, fromY, toX, toY);
+            double fromX = FxmlObjectProperties.DECK_X - handsCardsPane.getLayoutX() - toX;
+            double fromY = FxmlObjectProperties.DECK_Y - handsCardsPane.getLayoutY() - toY;
+
+            setTranslationOfCard(cardImage, fromX, fromY, 0, 0);
 
             handsCardsPane.getChildren().add(cardImage);
             cardImage.setOnMouseClicked(getOnCardOnHandsMouseClickedEventHandler(game));
 
-            cardImage.setX(0);
-            cardImage.setY(0);
+            cardImage.setX(toX);
+            cardImage.setY(toY);
             cardImage.setLayoutY(0);
 
-            game.addCardOnHand(card, imageView);
+            game.addCardOnHand(card, cardImage);
         }
 
         if (game.getCardsOnHands().size() == 0) {
